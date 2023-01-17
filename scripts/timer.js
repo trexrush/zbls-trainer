@@ -7,7 +7,7 @@ function showScramble()
     var scramble = "";
     var s;
     if (selCases.length == 0)
-        s = "click \"select cases\" above and pick some ZBLLs to practice";
+        s = "click \"select cases\" above and pick some ZBLS cases to practice";
     else {
         scramble = generateScramble();
         s = "scramble: " + scramble;
@@ -143,15 +143,22 @@ function replaceAll(str,mapObj) {
 // Example: applyRotationForAlgorithm("R U R'", "y") = "F U F'"
 function applyRotationForAlgorithm(alg, rot)
 {
+    let finald = "";
     var mapObj;
-    if (rot=="y")
+    if (rot=="y") {
         mapObj = {R:"F",F:"L",L:"B",B:"R"};
-    if (rot=="y'")
+        finald = " d";
+    }
+    if (rot=="y'") {
         mapObj = {R:"B",B:"L",L:"F",F:"R"};
-    if (rot=="y2")
+        finald = " d'";
+    }
+    if (rot=="y2") {
         mapObj = {R:"L",L:"R",B:"F",F:"B"};
+        finald = " d2";
+    }
 
-    return replaceAll(alg, mapObj);
+    return replaceAll(alg, mapObj) + finald;
 }
 
 function inverse_scramble(s)

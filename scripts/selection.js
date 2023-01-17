@@ -219,7 +219,7 @@ function collHeader(oll, coll) // div
 
 function collHeaderContent(oll, coll, n) // text
 {
-    let t = (oll == 'H' && (coll == 'BBFF' || coll == 'FBFB')) ? 8 : 12; // total
+    let t = (oll == 'Inserted Both' ? ((coll == '38' || coll == '39') ? 4 : 2) : 8); // total
     if (n == 0)
         return coll + " (0/"+t+")";
     return coll + " (<b>" + n + "</b>/"+t+")";
@@ -400,7 +400,7 @@ function displayZW(oll, coll)
 
 function updateZwHeader(oll, coll)
 {
-    let t = (oll == 'H' && (coll == 'BBFF' || coll == 'FBFB')) ? 8 : 12; // total
+    let t = (oll == 'Inserted Both' ? ((coll == '38' || coll == '39') ? 4 : 2) : 8); // total
     document.getElementById( "zwHeaderMessage" ).innerHTML = coll + "(" + nZbllsInColl(oll, coll) + "/"+t+")";
 }
 

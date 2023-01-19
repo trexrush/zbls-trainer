@@ -147,15 +147,8 @@ function generateSelectionTable()
 
         for (var oll in zbllMap) {
             if (zbllMap.hasOwnProperty(oll)) {
-                if (oll == "H" && row > 3)
-                {
-                    s += "<td class='collTd' id='td-empty'>(none)</td>";
-                }
-                else
-                {
-                    var collName = getCollByNum(oll, row);
-                    s += "<td class='collTd' id='" + idTdColl(oll,collName) + "'>" + collItem(oll, collName) + "</td>";
-                }
+                var collName = getCollByNum(oll, row);
+                s += "<td class='collTd' id='" + idTdColl(oll,collName) + "'>" + collItem(oll, collName) + "</td>";
             }
         }
 
@@ -205,7 +198,7 @@ function ollHeader(oll) // div
 
 function ollHeaderContent(oll, n) // text
 {
-    var total = (oll == "VHLS" ? 32 : (oll == "SlotBoth" ? 14 : 48));
+    var total = (oll == "VHLS" ? 32 : (oll == "SlotBoth" ? 14 : (oll == "Pair" || oll == "Split" ? 80 : 48)));
     var collapseIconSpan = "<span id='collapseSpan-"+oll+"' style='float:right'>▼</span>";
     if (n == 0)
             return oll + " (0/" + total + ") " + collapseIconSpan;

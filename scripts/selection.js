@@ -6,6 +6,8 @@ function colorNone() {
     return document.getElementById( "bgcolor_in" ).value;
 }
 
+var imgSize = 70;
+
 prepareMap();
 generateSelectionTable();
 loadSelection();
@@ -125,7 +127,7 @@ function renderSelection()
 function generateSelectionTable()
 {
     var s = "";
-    var maxColls = 6;
+    var maxColls = 41;
     s += "<table class='casesTable'>";
 
     // generate table header with OLL cases
@@ -173,7 +175,7 @@ function zbllItem(oll, coll, zbll) // div with img
     s += "id='" + idItemZbll(oll, coll, zbll) + "' ";
     s += "style='background-color:" + col + ";' ";
     s += " onmousedown='zbllClicked(\"" + oll + "\",\"" + coll + "\",\"" + zbll + "\")' class='zbllItem'>";
-    s += "<img src='" + zbllSvg(oll, coll, zbll) + "' width='100px'/>";
+    s += "<img src='" + zbllSvg(oll, coll, zbll) + "' width='" + imgSize + "px'/>";
     s += "<br>" + zbll.replace("s", "/");
     return s + "</div>";
 }
@@ -182,7 +184,7 @@ function ollItem(oll) // div
 {
     var s = "";
     s += ollHeader(oll);
-    s += "<div onmousedown='ollClicked(\"" + oll + "\")' class='ollItem'><img src='caseImage/" + oll + ".png' width='100px'/></div>";
+    s += "<div onmousedown='ollClicked(\"" + oll + "\")' class='ollItem'><img src='caseImage/" + oll + ".png' width='" + imgSize + "px'/></div>";
     return s;
 }
 
@@ -191,7 +193,7 @@ function collItem(oll, coll) // div
     var s = "";
     s += collHeader(oll, coll);
     s += "<div onmousedown='collClicked(\"" + oll + "\",\"" + coll + "\")' class='ollItem'><img src='caseImage/" + Glob.topOr3D + "/"
-            + oll+"-"+coll + ".png' width='100px'/></div>";
+            + oll+"-"+coll + ".png' width='" + imgSize + "px'/></div>";
     return s;
 }
 

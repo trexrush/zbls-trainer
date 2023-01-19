@@ -55,7 +55,7 @@ function idItemColl(oll,coll) {return "item-"+oll+"-"+coll;}
 function idItemZbll(oll,coll, zbll) {return "item-"+oll+"-"+coll+"-"+zbll;}
 function idHeaderOll(oll) {return "ollHead-"+oll;}
 function idHeaderColl(oll,coll) {return "collHead-"+oll+"-"+coll;}
-function zbllSvg(oll,coll, zbll) {return "svg/"+Glob.topOr3D+"/"+oll+"-"+coll+"-"+zbll.replace("/", "s")+".svg";}
+function zbllSvg(oll,coll, zbll) {return "caseImage/"+Glob.topOr3D+"/"+oll+"-"+coll+"-"+zbll.replace("/", "s")+".png";}
 
 
 function prepareMap() {
@@ -182,7 +182,7 @@ function ollItem(oll) // div
 {
     var s = "";
     s += ollHeader(oll);
-    s += "<div onmousedown='ollClicked(\"" + oll + "\")' class='ollItem'><img src='svg/" + oll + ".svg' width='100px'/></div>";
+    s += "<div onmousedown='ollClicked(\"" + oll + "\")' class='ollItem'><img src='caseImage/" + oll + ".png' width='100px'/></div>";
     return s;
 }
 
@@ -190,8 +190,8 @@ function collItem(oll, coll) // div
 {
     var s = "";
     s += collHeader(oll, coll);
-    s += "<div onmousedown='collClicked(\"" + oll + "\",\"" + coll + "\")' class='ollItem'><img src='svg/" + Glob.topOr3D + "/"
-            + oll+"-"+coll + ".svg' width='100px'/></div>";
+    s += "<div onmousedown='collClicked(\"" + oll + "\",\"" + coll + "\")' class='ollItem'><img src='caseImage/" + Glob.topOr3D + "/"
+            + oll+"-"+coll + ".png' width='100px'/></div>";
     return s;
 }
 
@@ -203,7 +203,7 @@ function ollHeader(oll) // div
 
 function ollHeaderContent(oll, n) // text
 {
-    var total = (oll == "H" ? 40 : 72);
+    var total = (oll == "VHLS" ? 32 : (oll == "SlotBoth" ? 14 : 48));
     var collapseIconSpan = "<span id='collapseSpan-"+oll+"' style='float:right'>▼</span>";
     if (n == 0)
             return oll + " (0/" + total + ") " + collapseIconSpan;
@@ -219,7 +219,7 @@ function collHeader(oll, coll) // div
 
 function collHeaderContent(oll, coll, n) // text
 {
-    let t = (oll == 'Inserted Both' ? ((coll == '38' || coll == '39') ? 4 : 2) : 8); // total
+    let t = (oll == 'SlotBoth' ? ((coll == '38' || coll == '39') ? 4 : 2) : 8); // total
     if (n == 0)
         return coll + " (0/"+t+")";
     return coll + " (<b>" + n + "</b>/"+t+")";

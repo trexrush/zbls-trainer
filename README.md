@@ -12,7 +12,9 @@ Casemap
 
 The casemap was generated using batch solver, with a ESQ of 
 
-```__: -1```
+```
+__: -1
+```
 
 or
 
@@ -27,3 +29,9 @@ Images
 ---------
 
 Images were generated using trainyu to get a list of ZBLS algs to feed into visualcube via a gsheets formulas and Excel Parser Processor to mass download/rename the files for them to work with the existing code of this trainer.
+
+
+Future plans
+----------
+
+I may add FL / BR slot support down the road.

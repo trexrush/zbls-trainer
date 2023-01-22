@@ -1,3 +1,5 @@
+import { zbllMap } from "./casesmap.js";
+
 /// \value stringified json object or standard type
 /// \returns true if succeed
 function saveLocal(name, value) {
@@ -14,7 +16,7 @@ function saveLocal(name, value) {
 }
 
 /// \returns loaded value or specified defaultValue in case of error
-function loadLocal(name, defaultValue = null) {
+function loadLocal(name, defaultValue) {
     // If the platform supports localStorage, then load the selection
     try {
         let val = localStorage.getItem(name);
@@ -67,4 +69,5 @@ function setZBLLMapFromSelectionString(string) {
     }
 }
 
+export { loadLocal, saveLocal, setZBLLMapFromSelectionString, getSelectionStringFromZBLLMap }
 

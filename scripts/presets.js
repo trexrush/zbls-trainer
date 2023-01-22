@@ -1,3 +1,7 @@
+import { getSelectionStringFromZBLLMap, loadLocal, saveLocal, setZBLLMapFromSelectionString } from "./saveload.js";
+import { renderSelection } from "./selection.js";
+import { applystyle } from "./timer.js";
+
 // map: "name" -> "JSON string"
 var zbllPresets = new Map();
 var bookmarksPresets = {};
@@ -6,7 +10,7 @@ const mbPresetName = "starred";
 document.getElementById('presetName').addEventListener("keyup", function(event) { if (event.keyCode === 13) { addNewPreset(); this.blur();} });
 
 function loadPresets() {
-    zbllPresets = JSON.parse(loadLocal('zbllPresets'));
+    zbllPresets = JSON.parse(loadLocal('zbllPresets', ''));
     if (zbllPresets == null)
         zbllPresets = new Map();
     if (zbllPresets.hasOwnProperty(mbPresetName)) {
@@ -24,7 +28,7 @@ function savePresets() {
 function displayPresets() {
     function presetDivHtml(pName, pNameToDisplay = pName) {
         return "<div class='prsi'>" + pNameToDisplay +
-            "<span class='prs-o'><a onclick='loadPreset(\""+pName+"\")'>load</a> | <a onclick='deletePreset(\""+pName+"\")'>delete</a></span> </div>";
+            "<span class='prs-o'><a onclick='window.loadPreset(\""+pName+"\")'>load</a> | <a onclick='window.deletePreset(\""+pName+"\")'>delete</a></span> </div>";
     }
     var s = "";
     if (zbllPresets.hasOwnProperty(mbPresetName))
@@ -118,3 +122,9 @@ function onBookmarkClicked(oll, coll, zbll) {
         document.getElementById("bookmarkBtn").title = "saved";
     }
 }
+
+window.deletePreset = deletePreset
+window.addNewPreset = addNewPreset
+window.loadPreset = loadPreset
+window.onBookmarkClicked = onBookmarkClicked
+export { loadPreset, loadPresets, savePresets, addNewPreset, displayPresets, isInBookmarks }

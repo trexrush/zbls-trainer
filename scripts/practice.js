@@ -1,12 +1,20 @@
+import { zbllMap } from "./casesmap.js";
+import { renderSelection, adjustInfo } from "./selection.js";
+import { displayPracticeInfo, showScramble, displayStats } from "./timer.js";
+
 var selCases = [];
+window.selCases = selCases
 var recaps = [];
+window.recaps = recaps
 var currentNum;
+window.currentNum = currentNum
 var currentMode = 0; // 0 = selection, 1 = practicing, 2 = recap
+window.currentMode = currentMode
 
 /// \param m = mode: 0 = selection, 1 = practicing, 2 = recap
 function changeMode(m)
 {
-    currentMode = m;
+    window.currentMode = m;
     var pr = document.getElementsByClassName("practice_layout");
     for (var i = 0; i < pr.length; i++)
         pr[i].style.display = (m == 0) ? 'none' : 'initial';
@@ -23,7 +31,7 @@ function changeMode(m)
 
     // switch to practising layout
     fillSelected();
-    recaps = (m == 2) ? selCases.slice() : [];
+    window.recaps = (m == 2) ? window.selCases.slice() : [];
     // practice
     displayPracticeInfo();
     showScramble();
@@ -35,11 +43,11 @@ function changeMode(m)
 // case.p = probability, normaized
 function fillSelected()
 {
-    selCases = [];
+    window.selCases = []
     for (var oll in zbllMap) if (zbllMap.hasOwnProperty(oll)) {
         var ollMap = zbllMap[oll];
         for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
-            collMap = ollMap[coll];
+            let collMap = ollMap[coll];
             for (var zbll in collMap) if (collMap.hasOwnProperty(zbll)) {
                 if (collMap[zbll]["c"])
                 {
@@ -99,3 +107,6 @@ function inverse_scramble(s) {
 
     return result;
 }
+
+window.changeMode = changeMode;
+export { inverse_scramble, randomNum, changeMode, currentNum, fillSelected }

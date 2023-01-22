@@ -1,21 +1,33 @@
-var allowStartingTimer;
 
+import { zbllMap } from "./casesmap.js";
+import { llmap } from "./llmap.js";
+import { fillSelected } from "./practice.js";
+import { isInBookmarks } from "./presets.js";
+import { loadLocal, saveLocal } from "./saveload.js";
+import { generateSelectionTable } from "./selection.js";
+import { preloadImage, scrambleToVcUrl } from "./vccache.js";
+import { processVirtInput, virtEnabled, virtualCube } from "./virtualcube.js";
+
+let scramble = ""
+window.scramble = scramble
+
+var allowStartingTimer;
+window.allowStartingTimer = allowStartingTimer
 /// invokes generateScramble() and sets scramble string
 function showScramble()
 {
     window.allowStartingTimer = false;
-    var scramble = "";
     var s;
-    if (selCases.length == 0)
+    if (window.selCases.length == 0)
         s = "click \"select cases\" above and pick some ZBLS cases to practice";
     else {
-        scramble = generateScramble();
-        s = "scramble: " + scramble;
+        window.scramble = generateScramble();
+        s = "scramble: " + window.scramble;
         window.allowStartingTimer = true;
     }
 
     document.getElementById("scramble").innerHTML = s;
-    preloadImage(scramble);
+    preloadImage(window.scramble);
 }
 
 function randomElement(arr)
@@ -24,7 +36,10 @@ function randomElement(arr)
 }
 
 var lastScramble = "";
+window.lastScramble = lastScramble
 var lastZbllCase = "";
+window.lastZbllCase = lastZbllCase
+
 
 function displayPracticeInfo() {
     var s = " | <b> " + window.selCases.length + "</b> selected";
@@ -186,9 +201,12 @@ function inverse_scramble(s)
 /*        TIMER        */
 
 var startMilliseconds, stopMiliseconds; // date and time when timer was started
+window.startMilliseconds = startMilliseconds
+window.stopMiliseconds = stopMiliseconds
 var allowed = true; // allowed var is for preventing auto-repeat when you hold a button
 var running = false; var waiting = false;
 var timer = document.getElementById("timer");
+var timertext = document.getElementById("timertext");
 
 function isMobile() {
     var check = false;
@@ -196,8 +214,8 @@ function isMobile() {
   return check;
 }
 
-welcomeMessage = isMobile() ? "touch to start" : "ready";
-timer.innerHTML = welcomeMessage;
+let welcomeMessage = isMobile() ? "touch to start" : "ready";
+timertext.innerHTML = welcomeMessage;
 
 var timerActivatingButton = 32; // 17 for ctrl
 var timeout;
@@ -215,8 +233,8 @@ function msToHumanReadable(duration) {
     seconds = (seconds < 10 && (minutes > 0 || hours > 0)) ? "0" + seconds : seconds;
     milliseconds = (milliseconds < 10) ? "0" + milliseconds : milliseconds;
 
-    hoursString = (hours == 0) ? "" : hours + ":";
-    minutesString = (minutes == 0) ? "" : minutes + ":";
+    let hoursString = (hours == 0) ? "" : hours + ":";
+    let minutesString = (minutes == 0) ? "" : minutes + ":";
 
     return hoursString + minutesString + seconds + "." + milliseconds;
 }
@@ -227,7 +245,7 @@ function displayTime() {
         var d = new Date();
         var diff = d.getTime() - window.startMilliseconds;
         if (diff >= 0)
-            timer.innerHTML = msToHumanReadable(diff);
+            timertext.innerHTML = msToHumanReadable(diff);
     }
 }
 
@@ -251,11 +269,22 @@ document.getElementById("bodyid").addEventListener("keydown", function(event) {
 
     if (running)
     {
-        // stop timer on any button
-        timerStop();
-        return;
+        console.log(event.keyCode)
+        if (virtEnabled) {
+            if (event.keyCode == timerActivatingButton || event.keyCode == 27) {
+                timerStop()
+            }
+            else {
+                processVirtInput(event.keyCode)
+            }
+        }
+        else {
+            // stop timer on any button
+            timerStop();
+            return;
+        }
     }
-    else if (event.keyCode == timerActivatingButton && currentMode != 0)
+    else if (event.keyCode == timerActivatingButton && window.currentMode != 0)
     {
         timerSetReady();
         return;
@@ -267,7 +296,7 @@ document.getElementById("bodyid").addEventListener("keyup", function(event) {
     allowed = true;
     if (!window.allowStartingTimer)
         return; // preventing auto-repeat
-    if (!running && !waiting && (event.keyCode == timerActivatingButton) && currentMode != 0) {
+    if (!running && !waiting && (event.keyCode == timerActivatingButton) && window.currentMode != 0) {
         timerStart();
     }
     else {
@@ -305,9 +334,9 @@ function timerStop() {
     clearTimeout(timeout);
 
     var d = new Date();
-    stopMiliseconds = d.getTime();
-    timer.innerHTML = msToHumanReadable(stopMiliseconds - startMilliseconds);
-    timer.style.color = "#850000";
+    window.stopMiliseconds = d.getTime();
+    timertext.innerHTML = msToHumanReadable(window.stopMiliseconds - window.startMilliseconds);
+    timertext.style.color = "#850000";
 
     appendStats();
     showScramble();
@@ -315,20 +344,26 @@ function timerStop() {
 
 function timerSetReady() {
     waiting = false;
-    timer.innerHTML = "0.00";
-    timer.style.color = "#008500";
+    timertext.innerHTML = "0.00";
+    timertext.style.color = "#008500";
 }
 
 function timerStart() {
+    if (virtEnabled) {
+        console.log( "applying scramble to virt" )
+        // randomly applies a ZBLL before applying the ZBLS scramble to simulate actual solves
+        window.virtMoves = inverse_scramble(randomElement(llmap)) + " " + window.scramble
+        virtualCube.alg = window.virtMoves
+    }
     var d = new Date();
-    startMilliseconds = d.getTime();
+    window.startMilliseconds = d.getTime();
     running = true;
     timeout = setInterval(displayTime, 10);
-    timer.style.color = document.getElementById( "textcolor_in" ).value;
+    timertext.style.color = document.getElementById( "textcolor_in" ).value;
 }
 
 function timerAfterStop() {
-    timer.style.color = document.getElementById( "textcolor_in" ).value;
+    timertext.style.color = document.getElementById( "textcolor_in" ).value;
 }
 
 
@@ -336,21 +371,24 @@ function timerAfterStop() {
 var defTimerSize = 60;
 var defScrambleSize = 25;
 var timerSize = parseInt(loadLocal("zblltimerSize", 0));
-if (isNaN(timerSize) || timerSize <= 0)
-    timerSize = defTimerSize;
+window.timerSize = timerSize
+if (isNaN(window.timerSize) || window.timerSize <= 0)
+    window.timerSize = defTimerSize;
 var scrambleSize = parseInt(loadLocal("zbllscrambleSize", 0));
-if (isNaN(scrambleSize) || scrambleSize <= 0)
-    scrambleSize = defScrambleSize;
+window.scrambleSize = scrambleSize
+
+if (isNaN(window.scrambleSize) || window.scrambleSize <= 0)
+    window.scrambleSize = defScrambleSize;
 
 adjustSize('scramble', 0);
-adjustSize('timer', 0);
+adjustSize('timertext', 0);
 
 function adjustSize(item, inc)
 {
-    if (item == 'timer')
+    if (item == 'timertext')
     {
         window.timerSize += inc
-        document.getElementById('timer').style.fontSize = window.timerSize + "px";
+        document.getElementById('timertext').style.fontSize = window.timerSize + "px";
         saveLocal("zblltimerSize", window.timerSize);
     }
 
@@ -367,7 +405,7 @@ function resetDefaults()
     window.timerSize = defTimerSize;
     window.scrambleSize = defScrambleSize;
     adjustSize('scramble', 0);
-    adjustSize('timer', 0);
+    adjustSize('timertext', 0);
 }
 
 /* STATS */
@@ -387,6 +425,7 @@ function escapeHtml(text) {
 
 /// [0: ResultInstance, 1: ResultInstance, ...]
 var timesArray = [];
+window.timesArray = timesArray
 try {
     var loadedTa = JSON.parse(loadLocal("zblltimesarray", '[]'));
     if (loadedTa != null)
@@ -426,8 +465,8 @@ function confirmRem(i)
 // user clicks "selected: no(yes)" on the scramble in practising mode
 function changeSelection(i) {
     var r = window.timesArray[i];
-    var selected = !(window.zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"]);
-    window.zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"] = selected;
+    var selected = !(zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"]);
+    zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"] = selected;
     document.getElementById("changeSelBtn").innerHTML = selected ? "is selected" : "not selected";
     // TODO instead of re-generating window.selCases, just remove one case from it
     fillSelected();
@@ -453,14 +492,14 @@ function confirmClear()
 
 /// \param i index of result instance
 function timeClicked(i) {
-    Glob.indexViewing = i;
+    window.indexViewing = i;
     fillResultInfo(window.timesArray[i]);
 }
 
 /// \param r - result instance (see makeResultInstance)
 /// \returns html code for displaying a single instance
 function makeResultLabelHtml(r) {
-    return "<span class='timeResult' onclick='timeClicked(" + r["index"] + ")'>" + r["time"] + "</span>";
+    return "<span class='timeResult' onclick='window.timeClicked(" + r["index"] + ")'>" + r["time"] + "</span>";
 }
 
 /// calculates preview picture size based on the available space we have
@@ -479,7 +518,7 @@ function fillResultInfo(r) {
     if (r != null) {
         // header
         var delBtn = "<a style='color: " + document.getElementById("linkscolor_in").value + "'" +
-                    "onclick='confirmRem(" + r["index"] + ")'>"+
+                    "onclick='window.confirmRem(" + r["index"] + ")'>"+
                     "delete</a>";
         document.getElementById("resultInfoHeader").innerHTML = "result #" + (r["index"] + 1) + "<b>: " + r["time"]
                 + "</b> (" +  delBtn + ")";
@@ -491,12 +530,12 @@ function fillResultInfo(r) {
         var isBookmarked = isInBookmarks(r["oll"], r["coll"], r["zbll"]);
         var bmTitle = isBookmarked ? "saved" : "save case";
         var bmInnerHtml = isBookmarked ? "&#9733;" : "&#9734;";
-        var ocScript = "onBookmarkClicked('"+r["oll"]+"', '"+r["coll"]+"', '"+r["zbll"]+"')";
+        var ocScript = "window.onBookmarkClicked('"+r["oll"]+"', '"+r["coll"]+"', '"+r["zbll"]+"')";
         s += "<a id='bookmarkBtn' title='"+bmTitle+"' class='bmBtn smallBtn' onclick=\""+ocScript+"\">"+bmInnerHtml+"</a>";
         s += "<a id='changeSelBtn' style='color: " +
             document.getElementById("linkscolor_in").value +
-            "' onclick='changeSelection(" + r["index"] + ")'>"+
-            (window.zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"] ? "is selected" : "not selected") + "</a><br>";
+            "' onclick='window.changeSelection(" + r["index"] + ")'>"+
+            (zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"] ? "is selected" : "not selected") + "</a><br>";
 
 
         document.getElementById("resultInfoContainer").innerHTML = s;
@@ -507,17 +546,17 @@ function fillResultInfo(r) {
         document.getElementById("resultInfoHeader").innerHTML = "results info will be displayed there";
         document.getElementById("resultInfoContainer").innerHTML = "";
         picContainer.innerHTML = "";
-        Glob.indexViewing = 0;
+        window.indexViewing = 0;
     }
 
 }
 
 function onFlat3DviewToggle() {
-    Glob.topOr3D = (Glob.topOr3D == 'top') ? '3D' : 'top';
-    saveLocal("topOr3D", Glob.topOr3D);
+    window.topOr3D = (window.topOr3D == 'top') ? '3D' : 'top';
+    saveLocal("topOr3D", window.topOr3D);
     generateSelectionTable(); // redraw selection
-    if (Glob.indexViewing < timesArray.length)
-        fillResultInfo(timesArray[Glob.indexViewing]);
+    if (window.indexViewing < timesArray.length)
+        fillResultInfo(timesArray[window.indexViewing]);
 }
 
 /// calculates average of \param n in window.timesArray in interval from (end-n, end]
@@ -594,8 +633,8 @@ function displayStats() {
         if (i != len - 1)
             el.innerHTML += ", ";
     }
-    Glob.indexViewing = window.timesArray.length - 1;
-    fillResultInfo(window.timesArray[Glob.indexViewing]);
+    window.indexViewing = window.timesArray.length - 1;
+    fillResultInfo(window.timesArray[window.indexViewing]);
 }
 
 /// foreach result instances, assign its index to number in array.
@@ -606,7 +645,7 @@ function updateInstancesIndeces() {
 }
 
 function makeResultInstance() {
-    var currentTime = document.getElementById("timer").innerHTML;
+    var currentTime = document.getElementById("timertext").innerHTML;
     return {
         "time": currentTime,
         "scramble": window.lastScramble,
@@ -662,7 +701,7 @@ function loadstyle() {
 
 function applystyle() {
     document.getElementById("bodyid").style.backgroundColor = document.getElementById("bgcolor_in").value;
-    document.getElementById("bodyid").style.color = timer.style.color = document.getElementById("textcolor_in").value;
+    document.getElementById("bodyid").style.color = timertext.style.color = document.getElementById("textcolor_in").value;
     var inputs = document.getElementsByClassName("settinginput");
     Array.prototype.forEach.call(inputs, function(el) {
         el.style.backgroundColor = document.getElementById("bgcolor_in").value;
@@ -704,3 +743,14 @@ Array.prototype.forEach.call(inputs, function(el) {
 
 loadstyle();
 applystyle();
+
+window.adjustSize = adjustSize
+window.confirmClear = confirmClear
+window.displayStatsBox = displayStatsBox
+window.onFlat3DviewToggle = onFlat3DviewToggle
+window.resetStyle = resetStyle
+window.toggleColorSettings = toggleColorSettings
+window.timeClicked = timeClicked
+window.confirmRem = confirmRem
+window.changeSelection = changeSelection
+export { isMobile, onFlat3DviewToggle, toggleColorSettings, resetStyle, applystyle, loadstyle, savestyle, displayStatsBox, resetDefaults, adjustSize, getPicSize, displayPracticeInfo, showScramble, displayStats }

@@ -3,93 +3,122 @@
 <link rel="stylesheet" type="text/css" href="styles/main.css?v8">
 <link rel="stylesheet" type="text/css" href="styles/selection.css?v8">
 <link rel="stylesheet" type="text/css" href="styles/timer.css?v8">
-<head>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-<meta name="description" content="A timer-like tool to learn and practice zbls algorithms. You can specify ZBLS cases & catigories to practice, recap forgotten ZBLS algs, create presets to practise and learn. Forked from Roman Strakhov's amazing ZBLL trainer." />
-<meta name="keywords" content="zbls, zbls trainer, zbls algorithms, cubing, speedcubing, f2l, vhls" />
-<meta name="author" content="Eduardo Mazuera">
-<link rel="manifest" href="manifest.json?v1">
-<link rel="shortcut icon" href="images/favicon.ico" />
-<title>
-ZBLS trainer
-</title>
-</head>
-<body class="niceBody" id="bodyid" onresize="adjustInfo()" onload="onBodyLoaded()">
-	<div class="practice_layout"> 
-	<table id="mainTable">
-		<tr>
-			<td id="casesBox" colspan="2">
-			<a id='selectBtn' onclick='changeMode(0)'>select cases</a><span id="selInfo"></span>
-			</td>
-		</tr>
-		<tr>
-			<td id="scramble" colspan="2">
-                        (scramble will be there)
-			</td>
-		</tr>
-		
-		<tr>
-			<td id="timer" style="height: 100%;">
-				loading, please wait...
-			</td>
-			<td id="stats">
-				<div class="resultInfoHeader">times (<a onclick="confirmClear();">clear</a>, <a onclick="displayStatsBox();">stats</a>):</div>
-				<div id="times"></div>
-				<div id="resultinfo">
-				    <div id='resultInfoHeader' class="resultInfoHeader">case info will be displayed there</div>
-				    <div id='resultInfoContainer'></div>
-				    <div id='resultPicContainer' onclick='onFlat3DviewToggle()' title='Click to toggle flat/3D view'></div>
-				</div>
-			</td>
-		</tr>
-		
-		<tr>
-			<td colspan="2" style="text-align: center;">
-				<a class='smallBtn' onclick="adjustSize('timer', -8);">⊖</a> timer <a class='smallBtn' onclick="adjustSize('timer', 8);">⊕</a> |
-				<a class='smallBtn' onclick="adjustSize('scramble', -5);">⊖</a> scramble <a class='smallBtn' onclick="adjustSize('scramble', 5);">⊕</a> |
-                colors (<a onclick='resetStyle(0)'>light</a>, <a onclick='resetStyle(1)'>dark</a>)
-                <a class='smallBtn' onclick='toggleColorSettings()'>⚙</a>
-                <span id='colorSettings'>background <input type='text' value='#f5f5f5' class='settinginput' id='bgcolor_in' onchange="applystyle();" placeholder='#f5f5f5' maxlength='12' size='7'/>
-              , text <input type='text' value='black' class='settinginput' id='textcolor_in' onchange="applystyle();"  placeholder='#000' maxlength='12' size='7'/>
-              , links <input type='text' value='#004411' class='settinginput' id='linkscolor_in' onchange="applystyle();"  placeholder='#004411' maxlength='12' size='7'/></span>
-                <br>
-zbls algorithms: <a href="https://docs.google.com/spreadsheets/d/1L0iR5AyRh2sTWymHSD2MiTJXzl8IoxGzyuRgqEhttSs/edit#gid=1895604888" target="_blank">click</a> or <a href="https://docs.google.com/spreadsheets/d/1s8Q2VM2c1eV3oLIxFfM4exvABO0AcCeMCUdMiYKnzC0/edit#gid=0" target="_blank">click</a>
-			&clubs;
-<a href="https://github.com/trexrush/zbls-trainer.git" target="_blank">GitHub repository</a>
-			&clubs;
-Original by <a href="https://bestsiteever.ru/me/" target="_blank">Roman Strakhov</a> with ❤
-			&clubs;
-ZBLS port by Eduardo Mazuera
-			</td>
-		</tr>
-	</table>
-        </div>
 
-	<div id="selection_layout"> 
-        <div id="panel_right">
-            <div id="select_info">
-                <button class="abutton" id="dbutton" title="Practice selected cases randomly" onclick='changeMode(1)'>Done</button>
-                <button class="abutton" title="Recap each selected case once" onclick='changeMode(2)'>Recap</button>
-                <ul>
-                  <li>Click on the picture to select / deselect all cases in the group</li>
-                  <li>Click on the item header to expand / collapse the group</li>
-                  <li>Green color means all cases in the group are selected; yellow - some cases are selected; white - no cases selected</li>
-                  <li>When you're ready, click Done</li>
-                </ul>
-                <br>
-                    GitHub repository: <a href="https://github.com/trexrush/zbls-trainer.git" target="_blank">click</a> <br>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<meta name="description"
+		content="A timer-like tool to learn and practice zbls algorithms. You can specify ZBLS cases & catigories to practice, recap forgotten ZBLS algs, create presets to practise and learn. Forked from Roman Strakhov's amazing ZBLL trainer." />
+	<meta name="keywords" content="zbls, zbls trainer, zbls algorithms, cubing, speedcubing, f2l, vhls" />
+	<meta name="author" content="Eduardo Mazuera">
+	<link rel="manifest" href="manifest.json?v1">
+	<link rel="shortcut icon" href="images/favicon.ico" />
+	<title>
+		ZBLS trainer
+	</title>
+</head>
+
+<body class="niceBody" id="bodyid" onload="window.onBodyLoaded()" onresize="window.adjustInfo()">
+	<div class="practice_layout">
+		<table id="mainTable">
+			<tr>
+				<td id="casesBox" colspan="2">
+					<a id='selectBtn' onclick='window.changeMode(0)'>select cases</a><span id="selInfo"></span>
+				</td>
+			</tr>
+			<tr>
+				<td id="scramble" colspan="2">
+					(scramble will be there)
+				</td>
+			</tr>
+
+			<tr>
+				<td id="timer" style="height: 100%;">
+					<span id="timertext">loading, please wait...</span>
+				</td>
+				<td id="stats">
+					<div class="resultInfoHeader">times (<a onclick="window.confirmClear()">clear</a>, <a
+							onclick="window.displayStatsBox()">stats</a>):</div>
+					<div id="times"></div>
+					<div id="resultinfo">
+						<div id='resultInfoHeader' class="resultInfoHeader">case info will be displayed there</div>
+						<div id='resultInfoContainer'></div>
+						<div id='resultPicContainer' onclick='window.onFlat3DviewToggle()'
+							title='Click to toggle flat/3D view'></div>
+					</div>
+				</td>
+			</tr>
+
+			<tr>
+				<twisty-stream-source style="display: none"></twisty-stream-source>
+				<td colspan="2" style="text-align: center;">
+					<a class='smallBtn' onclick="window.adjustSize('timertext', -8)">⊖</a> timer <a class='smallBtn'
+						onclick="window.adjustSize('timertext', 8);">⊕</a> |
+					<a class='smallBtn' onclick="window.adjustSize('scramble', -5);">⊖</a> scramble <a class='smallBtn'
+						onclick="window.adjustSize('scramble', 5);">⊕</a> |
+					colors (<a onclick='window.resetStyle(0)'>light</a>, <a onclick='window.resetStyle(1)'>dark</a>)
+					<a class='smallBtn' onclick='window.toggleColorSettings()'>⚙</a>
+					<span id='colorSettings'>background <input type='text' value='#f5f5f5' class='settinginput'
+							id='bgcolor_in' onchange="window.applystyle()" placeholder='#f5f5f5' maxlength='12'
+							size='7' />
+						, text <input type='text' value='black' class='settinginput' id='textcolor_in'
+							onchange="window.applystyle()" placeholder='#000' maxlength='12' size='7' />
+						, links <input type='text' value='#004411' class='settinginput' id='linkscolor_in'
+							onchange="window.applystyle()" placeholder='#004411' maxlength='12' size='7' /></span>
+					<br>
+					zbls algorithms: <a
+						href="https://docs.google.com/spreadsheets/d/1L0iR5AyRh2sTWymHSD2MiTJXzl8IoxGzyuRgqEhttSs/edit#gid=1895604888"
+						target="_blank">click</a> or <a
+						href="https://docs.google.com/spreadsheets/d/1s8Q2VM2c1eV3oLIxFfM4exvABO0AcCeMCUdMiYKnzC0/edit#gid=0"
+						target="_blank">click</a>
+					&clubs;
+					<a href="https://github.com/trexrush/zbls-trainer.git" target="_blank">GitHub repository</a>
+					&clubs;
+					Original by <a href="https://bestsiteever.ru/me/" target="_blank">Roman Strakhov</a> with ❤
+					&clubs;
+					ZBLS port by Eduardo Mazuera
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="selection_layout">
+		<div id="panel_right">
+			<div id="select_info">
+				<button class="abutton" id="dbutton" title="Practice selected cases randomly"
+					onclick='window.changeMode(1)'>Done</button>
+				<button class="abutton thinner" title="Recap each selected case once"
+					onclick='window.changeMode(2)'>Recap</button>
+				<br>
+				<div>
+					<button id="vctoggle" class="abutton thinner shorter" title="Enable virtual cube for drilling">Use
+						Virtual Cube</button>
+					<button id="vcoptions" class="abutton thinner shorter" title="Enable virtual cube for drilling"
+						style="display: none;">Configure Virtual Cube</button>
+				</div>
+				<ul>
+					<li>Click on the picture to select / deselect all cases in the group</li>
+					<li>Click on the item header to expand / collapse the group</li>
+					<li>Green color means all cases in the group are selected; yellow - some cases are selected; white -
+						no cases selected</li>
+					<li>When you're ready, click Done</li>
+				</ul>
+				<br>
+				At the moment, you need to stop the virt timer manually, and the configure virtual cube button does nothing. (coming soon!)
+				<br>
+				GitHub repository: <a href="https://github.com/trexrush/zbls-trainer.git" target="_blank">click</a> <br>
 			</div>
-            <div id="presets">
-                <hr>
-                <input type='text' id='presetName' placeholder='Preset name' maxlength='20' size='15' value='New preset'/> <a onclick='addNewPreset()'>save</a>
-                <div class="prs-l" id="prslist">
-                </div>
-            </div>
-        </div>
+			<div id="presets">
+				<hr>
+				<input type='text' id='presetName' placeholder='Preset name' maxlength='20' size='15'
+					value='New preset' /> <a onclick='window.addNewPreset()'>save</a>
+				<div class="prs-l" id="prslist">
+				</div>
+			</div>
+		</div>
 
 		<div id="cases_selection">
 		</div>
-		
+
 		<div id="zbllWindow">
 			<div id="zwHeader">
 				<div id="zwHeaderMessage">
@@ -100,23 +129,41 @@ ZBLS port by Eduardo Mazuera
 			<div id="zwFooter">
 				<div class="zwButton" id="allZwButton">&nbsp;all&nbsp;</div>
 				<div class="zwButton" id="noneZwButton">&nbsp;none&nbsp;</div>
-				<div class="zwButton" id="closeZwButton" onclick="closeZW();">&nbsp;done&nbsp;</div>
+				<div class="zwButton" id="closeZwButton" onclick="window.closeZW();">&nbsp;done&nbsp;</div>
 			</div>
 		</div> <!-- zbllWindow -->
 	</div> <!-- selection layout -->
-	
-	<div id="zbllWindowBack" onclick='closeZW();'></div>
 
-	<script src="scripts/casesmap.js?v18"></script>
-	<script src="scripts/saveload.js?v18"></script>
-	<script src="scripts/vccache.js?v18"></script>
-	<script src="scripts/glob.js?v18"></script>
-	<script src="scripts/presets.js?v18b"></script>
-	<script src="scripts/practice.js?v18"></script>
-	<script src="scripts/timer.js?v18b"></script>
-	<script src="scripts/selection.js"></script>
-	<script>
+	<div id="zbllWindowBack" onclick='window.closeZW();'></div>
+	<script  src="scripts/selection.js" type="module"></script>
+	<script  src="scripts/vccache.js" type="module"></script>
+	<script  src="scripts/practice.js" type="module"></script>
+	<script  src="scripts/timer.js" type="module"></script>
+	<script  src="scripts/virtualcube.js" type="module"></script>
+	<script defer type="module">
+		import { changeMode } from "./scripts/practice.js";
+		import { prepareMap, generateSelectionTable, renderSelection, adjustInfo, loadSelection } from "./scripts/selection.js";
+		import { topOr3D } from "./scripts/glob.js"
+
+		prepareMap();
+		generateSelectionTable();
+		loadSelection();
+		renderSelection();
+		adjustInfo();
+
+		document.getElementById("bodyid").addEventListener("keydown", function (event) {
+			if (event.keyCode == 27) // esc
+				closeZW();
+		});
+
 		changeMode(0);
 	</script>
 </body>
+
 </html>
+
+
+<script src="scripts/glob.js" type="module"></script>
+<script src="scripts/casesmap.js" type="module"></script>
+<script src="scripts/saveload.js" type="module"></script>
+<script src="scripts/presets.js" type="module"></script>

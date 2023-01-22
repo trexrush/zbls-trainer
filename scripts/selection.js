@@ -1,3 +1,6 @@
+import { zbllMap } from './casesmap.js'
+import { getSelectionStringFromZBLLMap, loadLocal, saveLocal, setZBLLMapFromSelectionString } from './saveload.js';
+import { getPicSize } from './timer.js';
 /* colors correspond to selection state */
 
 var colorAll = "#5f5";
@@ -8,15 +11,10 @@ function colorNone() {
 
 var imgSize = 70;
 
-prepareMap();
-generateSelectionTable();
-loadSelection();
-renderSelection();
-adjustInfo();
-
 function saveSelection() {
     return saveLocal('zbllSelection', getSelectionStringFromZBLLMap());
 }
+window.saveSelection = saveSelection
 
 function loadSelection() {
     var selectionString = loadLocal('zbllSelection', '');
@@ -28,10 +26,6 @@ function loadSelection() {
     return true;
 }
 
-document.getElementById("bodyid").addEventListener("keydown", function(event) {
-    if (event.keyCode == 27) // esc
-        closeZW();
-});
 
 // allocate help;
 function adjustInfo()
@@ -40,7 +34,7 @@ function adjustInfo()
     if (document.getElementById( "previewPic" ) != null)
             document.getElementById( "resultPicContainer" ).style.height = getPicSize() + "px";
 
-    if (currentMode == 0) {
+    if (window.currentMode == 0) {
 
         var cases = document.getElementById( "cases_selection" )
         let rectW = Math.min(cases.getBoundingClientRect().width, document.body.getBoundingClientRect().width - 299)
@@ -83,14 +77,14 @@ function idItemColl(oll,coll) {return "item-"+oll+"-"+coll;}
 function idItemZbll(oll,coll, zbll) {return "item-"+oll+"-"+coll+"-"+zbll;}
 function idHeaderOll(oll) {return "ollHead-"+oll;}
 function idHeaderColl(oll,coll) {return "collHead-"+oll+"-"+coll;}
-function zbllSvg(oll,coll, zbll) {return "caseImage/"+Glob.topOr3D+"/"+oll+"-"+coll+"-"+zbll.replace("/", "s")+".png";}
+function zbllSvg(oll,coll, zbll) {return "caseImage/"+window.topOr3D+"/"+oll+"-"+coll+"-"+zbll.replace("/", "s")+".png";}
 
 
 function prepareMap() {
     for (var oll in zbllMap) if (zbllMap.hasOwnProperty(oll)) {
         var ollMap = zbllMap[oll];
         for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
-            collMap = ollMap[coll];
+            let collMap = ollMap[coll];
             for (var zbll in collMap) if (collMap.hasOwnProperty(zbll)) {
                 var zbllAlgs = collMap[zbll];
                 collMap[zbll] = {"algs":zbllAlgs, "c":false};
@@ -119,7 +113,7 @@ function renderSelection()
         for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
             var collNoneSel = true, collAllSel = true; // ollNoneSel = 0 selected, ollAllSel = all cases selected	
             var zbllsInColl = 0;
-            collMap = ollMap[coll];
+            let collMap = ollMap[coll];
             for (var zbll in collMap) if (collMap.hasOwnProperty(zbll)) {
                 var zbllAlg = collMap[zbll];
                 if (collMap[zbll]["c"])
@@ -186,6 +180,7 @@ function generateSelectionTable()
         s += "</tr>";
     }
     s += "</table>";
+
     document.getElementById("cases_selection").innerHTML = s;
 }
 
@@ -198,7 +193,7 @@ function zbllItem(oll, coll, zbll) // div with img
     s += "<div ";
     s += "id='" + idItemZbll(oll, coll, zbll) + "' ";
     s += "style='background-color:" + col + ";' ";
-    s += " onmousedown='zbllClicked(\"" + oll + "\",\"" + coll + "\",\"" + zbll + "\")' class='zbllItem'>";
+    s += " onmousedown='window.zbllClicked(\"" + oll + "\",\"" + coll + "\",\"" + zbll + "\")' class='zbllItem'>";
     s += "<img src='" + zbllSvg(oll, coll, zbll) + "' width='" + imgSize + "px'/>";
     s += "<br>" + zbll.replace("s", "/");
     return s + "</div>";
@@ -208,7 +203,7 @@ function ollItem(oll) // div
 {
     var s = "";
     s += ollHeader(oll);
-    s += "<div onmousedown='ollClicked(\"" + oll + "\")' class='ollItem'><img src='caseImage/" + oll + ".png' width='" + imgSize + "px'/></div>";
+    s += "<div onmousedown='window.ollClicked(\"" + oll + "\")' class='ollItem'><img src='caseImage/" + oll + ".png' width='" + imgSize + "px'/></div>";
     return s;
 }
 
@@ -216,14 +211,14 @@ function collItem(oll, coll) // div
 {
     var s = "";
     s += collHeader(oll, coll);
-    s += "<div onmousedown='collClicked(\"" + oll + "\",\"" + coll + "\")' class='ollItem'><img src='caseImage/" + Glob.topOr3D + "/"
+    s += "<div onmousedown='window.collClicked(\"" + oll + "\",\"" + coll + "\")' class='ollItem'><img src='caseImage/" + window.topOr3D + "/"
             + oll+"-"+coll + ".png' width='" + imgSize + "px'/></div>";
     return s;
 }
 
 function ollHeader(oll) // div
 {
-    return "<div class='ollHeader' id='" +idHeaderOll(oll)+"' onclick='expandOll(\""+oll+"\")'>"+
+    return "<div class='ollHeader' id='" +idHeaderOll(oll)+"' onclick='window.expandOll(\""+oll+"\")'>"+
             ollHeaderContent(oll,0) +"</div>";
 }
 
@@ -240,7 +235,7 @@ function ollHeaderContent(oll, n) // text
 function collHeader(oll, coll) // div
 {
     return "<div class='collHeader' id='" +idHeaderColl(oll, coll)+
-            "'onclick='expandColl(\""+oll + "\",\"" + coll +"\")'>" +collHeaderContent(oll, coll, 0) +"</div>";
+            "'onclick='window.expandColl(\""+oll + "\",\"" + coll +"\")'>" +collHeaderContent(oll, coll, 0) +"</div>";
 }
 
 function collHeaderContent(oll, coll, n) // text
@@ -333,7 +328,7 @@ function selectAllOll(oll, c)
 {
     var ollMap = zbllMap[oll];
     for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
-        collMap = ollMap[coll];
+        let collMap = ollMap[coll];
         for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
             collMap[zbll]["c"] = c;
     }
@@ -369,7 +364,7 @@ function ollHasSelected(oll)
 {
     var ollMap = zbllMap[oll];
     for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
-        collMap = ollMap[coll];
+        let collMap = ollMap[coll];
         for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
             if (collMap[zbll]["c"])
                 return true;
@@ -439,3 +434,12 @@ function closeZW()
         renderSelection();
     }
 }
+
+window.expandOll = expandOll
+window.expandColl = expandColl
+window.zbllClicked = zbllClicked
+window.collClicked = collClicked
+window.ollClicked = ollClicked
+window.adjustInfo = adjustInfo
+window.closeZW = closeZW
+export { renderSelection, adjustInfo, closeZW, prepareMap, generateSelectionTable, loadSelection }

@@ -168,3 +168,7 @@ td {	border: 1px solid #000;}
     font-size: 15px;
     height: 1.8em;
 }
+
+.abutton.shorter {
+    width: 12em;
+}

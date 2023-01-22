@@ -11,9 +11,8 @@ function changeMode(m)
     for (var i = 0; i < pr.length; i++)
         pr[i].style.display = (m == 0) ? 'none' : 'initial';
 
-    var se = document.getElementsByClassName("selection_layout");
-    for (var i = 0; i < se.length; i++)
-        se[i].style.display = (m == 0) ? 'initial' : 'none';
+    var se = document.getElementById("selection_layout");
+    se.style.display = (m == 0) ? 'initial' : 'none';
 
     if (m == 0) {
         // selection layout

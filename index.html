@@ -65,14 +65,13 @@ ZBLS port by Eduardo Mazuera
 	</table>
         </div>
 
-	<div class="selection_layout"> 
-		<div id="cases_selection">
-		</div>
-
+	<div id="selection_layout"> 
         <div id="panel_right">
             <div id="select_info">
                 <button class="abutton" id="dbutton" title="Practice selected cases randomly" onclick='changeMode(1)'>Done</button>
-                <button class="abutton thinner" title="Recap each selected case once" onclick='changeMode(2)'>Recap</button>
+                <button class="abutton" title="Recap each selected case once" onclick='changeMode(2)'>Recap</button>
+				<br>
+				<button id="vctoggle" class="abutton thinner shorter" title="Enable virtual cube for drilling">Toggle Virtual Cube</button>
                 <ul>
                   <li>Click on the picture to select / deselect all cases in the group</li>
                   <li>Click on the item header to expand / collapse the group</li>
@@ -81,7 +80,7 @@ ZBLS port by Eduardo Mazuera
                 </ul>
                 <br>
                     GitHub repository: <a href="https://github.com/trexrush/zbls-trainer.git" target="_blank">click</a> <br>
-            </div>
+			</div>
             <div id="presets">
                 <hr>
                 <input type='text' id='presetName' placeholder='Preset name' maxlength='20' size='15' value='New preset'/> <a onclick='addNewPreset()'>save</a>
@@ -90,6 +89,8 @@ ZBLS port by Eduardo Mazuera
             </div>
         </div>
 
+		<div id="cases_selection">
+		</div>
 		
 		<div id="zbllWindow">
 			<div id="zwHeader">
@@ -108,16 +109,17 @@ ZBLS port by Eduardo Mazuera
 	
 	<div id="zbllWindowBack" onclick='closeZW();'></div>
 
+	<script src="scripts/casesmap.js?v18"></script>
+	<script src="scripts/saveload.js?v18"></script>
+	<script src="scripts/vccache.js?v18"></script>
+	<script src="scripts/glob.js?v18"></script>
+	<script src="scripts/presets.js?v18b"></script>
+	<script src="scripts/practice.js?v18"></script>
+	<script src="scripts/timer.js?v18b"></script>
+	<script src="scripts/selection.js"></script>
+	<script src="scripts/virtualcube.js" type="module"></script>
+	<script>
+		changeMode(0);
+	</script>
 </body>
 </html>
-<script src="scripts/casesmap.js?v18"></script>
-<script src="scripts/saveload.js?v18"></script>
-<script src="scripts/vccache.js?v18"></script>
-<script src="scripts/glob.js?v18"></script>
-<script src="scripts/presets.js?v18b"></script>
-<script src="scripts/practice.js?v18"></script>
-<script src="scripts/timer.js?v18b"></script>
-<script src="scripts/selection.js?v18"></script>
-<script>
-changeMode(0);
-</script>

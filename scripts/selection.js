@@ -36,16 +36,42 @@ document.getElementById("bodyid").addEventListener("keydown", function(event) {
 // allocate help;
 function adjustInfo()
 {
-    var rect = document.getElementById( "cases_selection" ).getBoundingClientRect();
-
-    document.getElementById( "panel_right" ).style.left = rect.right + "px";
-
-    document.getElementById( "panel_right" ).style.width =
-        (document.body.clientWidth - rect.right - 30) + "px";
-
+    // resizing info panel in practice screen
     if (document.getElementById( "previewPic" ) != null)
-        document.getElementById( "resultPicContainer" ).style.height = getPicSize() + "px";
+            document.getElementById( "resultPicContainer" ).style.height = getPicSize() + "px";
 
+    if (currentMode == 0) {
+
+        var cases = document.getElementById( "cases_selection" )
+        let rectW = Math.min(cases.getBoundingClientRect().width, document.body.getBoundingClientRect().width - 299)
+        let screenTooSmall = document.body.clientWidth - rectW < 300
+        
+        let infoPanel = document.getElementById( "panel_right" )
+        let selectionContainer = document.getElementById( "selection_layout" )
+        
+        if(screenTooSmall) {
+            infoPanel.style.position = "relative";
+            infoPanel.style.left = 0;
+            infoPanel.style.width = "90vw";
+            
+            selectionContainer.style.flexDirection = "column";
+            selectionContainer.style.justifyContent = "center";
+            
+            cases.style.margin = "auto"
+        }
+        else {
+        infoPanel.style.position = "absolute";
+        infoPanel.style.left = cases.getBoundingClientRect().right + "px";
+        infoPanel.style.width = (document.body.clientWidth - cases.getBoundingClientRect().right - 30) + "px";
+        
+        selectionContainer.style.flexDirection = "row";
+        selectionContainer.style.justifyContent = "flex-start";
+        
+        cases.style.margin = 0
+    }
+}
+
+    
 }
 
 
@@ -127,7 +153,7 @@ function renderSelection()
 function generateSelectionTable()
 {
     var s = "";
-    var maxColls = 41;
+    var maxColls = 10;
     s += "<table class='casesTable'>";
 
     // generate table header with OLL cases
@@ -148,7 +174,12 @@ function generateSelectionTable()
         for (var oll in zbllMap) {
             if (zbllMap.hasOwnProperty(oll)) {
                 var collName = getCollByNum(oll, row);
-                s += "<td class='collTd' id='" + idTdColl(oll,collName) + "'>" + collItem(oll, collName) + "</td>";
+                if (!collName) {
+                    s += "<td class='collTd' id='td-empty'>(none)</td>";
+                }
+                else {
+                    s += "<td class='collTd' id='" + idTdColl(oll,collName) + "'>" + collItem(oll, collName) + "</td>";
+                }
             }
         }
 
@@ -232,7 +263,7 @@ function getCollByNum(oll, n)
                 return key;
         }
     }
-    console.error("getCollByNum: number is too high. Oll = " + oll + ", n = " + n);
+    // console.error("getCollByNum: number is too high. Oll = " + oll + ", n = " + n);
     return "";
 }
 

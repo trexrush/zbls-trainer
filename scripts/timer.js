@@ -9,7 +9,6 @@ import { preloadImage, scrambleToVcUrl } from "./vccache.js";
 import { processVirtInput, virtEnabled, virtualCube } from "./virtualcube.js";
 
 let scramble = ""
-window.scramble = scramble
 
 var allowStartingTimer;
 window.allowStartingTimer = allowStartingTimer
@@ -21,13 +20,13 @@ function showScramble()
     if (window.selCases.length == 0)
         s = "click \"select cases\" above and pick some ZBLS cases to practice";
     else {
-        window.scramble = generateScramble();
-        s = "scramble: " + window.scramble;
+        scramble = generateScramble();
+        s = "scramble: " + scramble;
         window.allowStartingTimer = true;
     }
 
     document.getElementById("scramble").innerHTML = s;
-    preloadImage(window.scramble);
+    preloadImage(scramble);
 }
 
 function randomElement(arr)
@@ -269,7 +268,6 @@ document.getElementById("bodyid").addEventListener("keydown", function(event) {
 
     if (running)
     {
-        console.log(event.keyCode)
         if (virtEnabled) {
             if (event.keyCode == timerActivatingButton || event.keyCode == 27) {
                 timerStop()
@@ -351,9 +349,17 @@ function timerSetReady() {
 function timerStart() {
     if (virtEnabled) {
         console.log( "applying scramble to virt" )
+        virtualCube.alg = ''
+        window.virtMoves = ''
+        let setup = inverse_scramble(randomElement(llmap)) + " " + scramble
         // randomly applies a ZBLL before applying the ZBLS scramble to simulate actual solves
-        window.virtMoves = inverse_scramble(randomElement(llmap)) + " " + window.scramble
-        virtualCube.alg = window.virtMoves
+        if (window.smoothMovement) {
+            virtualCube.experimentalSetupAlg = setup
+        }
+        else {
+            window.virtMoves = setup
+            virtualCube.alg = window.virtMoves
+        }
     }
     var d = new Date();
     window.startMilliseconds = d.getTime();

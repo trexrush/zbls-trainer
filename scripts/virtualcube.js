@@ -1,7 +1,9 @@
 import { TwistyPlayer } from "https://cdn.cubing.net/js/cubing/twisty"
 // import { debugKeyboardConnect } from "https://cdn.cubing.net/js/cubing/bluetooth";
-// import { Alg, Move, keyToMove } from "https://cdn.cubing.net/js/cubing/alg";
+import { Alg, Move, keyToMove } from "https://cdn.cubing.net/js/cubing/alg";
+// import { FaceletScaleProp } from "https://cdn.cubing.net/js/cubing/twisty/model/props/puzzle/display/FaceletScaleProp.ts"
 import { isMobile } from "./timer.js";
+import { keyBoardMappings, keymap } from "./keyboardMappings.js";
 
 let virtMoves
 window.virtMoves = virtMoves;
@@ -31,6 +33,7 @@ const virtualCube = new TwistyPlayer({
     cameraLatitude: 45,
     cameraLongitude: 1,
     cameraLatitudeLimit: 45,
+    alg: new Alg()
 });
 virtualCube.style.display = "none"
 virtualCube.style.margin = "auto"
@@ -39,11 +42,30 @@ virtualCube.style.height = "70%"
 
 timer.prepend(virtualCube);
 
+function processVirtInput(keyCode) {
+    if (keyCode in keymap) {
+        let newMove = keymap[keyCode][1]
+        if (options[2][1]) {
+            if (newMove) {
+                try {
+                    virtualCube.experimentalAddAlgLeaf(new Move(newMove))
+                } catch (e) {
+                    console.warn('Bad alg leaf ' + newMove + ' ' + e.stackTrace)
+                }
+            }
+        }
+        else {
+            console.log(window.virtMoves)
+            // virtualCube.experimentalAppendMove(new Move(newMove))
+            window.virtMoves += " " + keymap[keyCode][1]
+            virtualCube.alg = window.virtMoves
+        }
+    }
+}
 
 function toggleVC() {
     if (virtEnabled) {
         // DISABLE VC
-
         document.getElementById("vcoptions").style.display = "none"
         document.getElementById("vctoggle").innerHTML = `Enable Virtual Cube`
         document.getElementById("vctoggle").style.backgroundColor = "#c6cbcb"
@@ -52,101 +74,13 @@ function toggleVC() {
     }
     else {
         // ENABLE VC
-
         document.getElementById("vcoptions").style.display = null
         document.getElementById("vctoggle").innerHTML = `<b>Disable Virtual Cube</b>`
         document.getElementById("vctoggle").style.backgroundColor = "#95a5a6"
 
-
         document.querySelector("twisty-player").style.display = "grid";
-        // timer.innerText = ""
-
     }
-
     virtEnabled = !virtEnabled
-}
-
-const legalMoves = ["U", "R", "L", "D", "B", "F", "M", "E", "S", "u", "r", "l", "d", "b", "f", "x", "y", "z",
-    "U'", "R'", "L'", "D'", "B'", "F'", "M'", "E'", "S'", "u'", "r'", "l'", "d'", "b'", "f'", "x'", "y'", "z'",
-    "U2", "R2", "L2", "D2", "B2", "F2", "M2", "E2", "S2", "u2", "r2", "l2", "d2", "b2", "f2", "x2", "y2", "z2", ""]
-
-let defaultKeymap = {
-    // code of key: move it applies
-    "Digit1": ["1", ""],
-    "Digit2": ["2", "S'"],
-    "Digit3": ["3", ""],
-    "Digit4": ["4", "M"],
-    "Digit5": ["5", "M"],
-    "Digit6": ["6", ""],
-    "Digit7": ["7", "M"],
-    "Digit8": ["8", "M"],
-    "Digit9": ["9", ""],
-    "Digit0": ["0", "S"],
-    "Minus": ["-", ""],
-    "Equal": ["=", ""],
-
-    "KeyQ": ["Q", "z'"],
-    "KeyW": ["W", "B"],
-    "KeyE": ["E", "L'"],
-    "KeyR": ["R", "l"],
-    "KeyT": ["T", "x"],
-    "KeyY": ["Y", "x"],
-    "KeyU": ["U", "r"],
-    "KeyI": ["I", "R"],
-    "KeyO": ["O", "B'"],
-    "KeyP": ["P", "z"],
-    "BracketLeft": ["[", ""],
-    "BracketRight": ["]", ""],
-    "Backslash": ["\\", ""],
-
-    "KeyA": ["A", "y'"],
-    "KeyS": ["S", "D'"],
-    "KeyD": ["D", "L"],
-    "KeyF": ["F", "U'"],
-    "KeyG": ["G", "F'"],
-    "KeyH": ["H", "F"],
-    "KeyJ": ["J", "U"],
-    "KeyK": ["K", "R'"],
-    "KeyL": ["L", "D"],
-    "Semicolon": [";", "y"],
-    "Quote": ["\'", ""],
-
-    "KeyZ": ["Z", "d'"],
-    "KeyX": ["X", "M'"],
-    "KeyC": ["C", "l'"],
-    "KeyV": ["V", "x'"],
-    "KeyB": ["B", "x'"],
-    "KeyN": ["N", ""],
-    "KeyM": ["M", "r'"],
-    "Comma": [",", "M'"],
-    "Period": [".", "d"],
-    "Slash": ["/", "d"],
-
-    "Numpad7": ["7", ""],
-    "Numpad4": ["4", ""],
-    "Numpad1": ["3", ""],
-    "NumpadDivide": ["/", ""],
-    "Numpad8": ["8", ""],
-    "Numpad5": ["5", ""],
-    "Numpad2": ["1", ""],
-    "NumpadMultiply": ["*", ""],
-    "Numpad9": ["9", ""],
-    "Numpad6": ["6", ""],
-    "Numpad3": ["2", ""],
-    "NumpadSubtract": ["-", ""],
-    "NumpadAdd": ["+", ""],
-    "Numpad0": ["0", ""],
-    "NumpadDecimal": [".", ""],
-
-}
-
-let keymap = defaultKeymap
-
-function processVirtInput(keyCode) {
-    if (keyCode in keymap) {
-        window.virtMoves += " " + keymap[keyCode][1]
-        virtualCube.alg = window.virtMoves
-    }
 }
 
 let options = [
@@ -170,7 +104,76 @@ let options = [
             console.log("ZBLS now " + options[1][1])
         }
     ],
+    ["Smooth Move Animation",
+        false,
+        "bool",
+        setOption => {
+            options[2][1] = !options[2][1]
+            window.smoothMovement = options[2][1]
+            window.virtMoves = ''
+            console.log("move animation " + options[2][1])
+        }
+    ],
+    ["Back Hint Stickers",
+        false,
+        "bool",
+        setOption => {
+            options[3][1] ? virtualCube.hintFacelets = "none" : virtualCube.hintFacelets = "floating"
+            options[3][1] = !options[3][1]
+            console.log("hint stickers now " + options[3][1])
+        }
+    ],
+    // not functional
+    // ["Smaller Facelet Size",
+    //     false,
+    //     "bool",
+    //     setOption => {
+    //         options[4][1] ? virtualCube.experimentalModel.twistySceneModel.faceletScale = "auto" : virtualCube.experimentalModel.twistySceneModel.faceletScale = .5
+    //         options[4][1] = !options[4][1]
+    //         console.log("smaller facelet " + options[4][1])
+    //     }
+    // ],
 ]
+
+// KEYBINDING RELATED //
+
+const legalMoves = ["U", "R", "L", "D", "B", "F", "M", "E", "S", "u", "r", "l", "d", "b", "f", "x", "y", "z",
+    "U'", "R'", "L'", "D'", "B'", "F'", "M'", "E'", "S'", "u'", "r'", "l'", "d'", "b'", "f'", "x'", "y'", "z'",
+    "U2", "R2", "L2", "D2", "B2", "F2", "M2", "E2", "S2", "u2", "r2", "l2", "d2", "b2", "f2", "x2", "y2", "z2", ""]
+
+// mapping: String() (if I move to TS then Move[]) with a length of 61 (0-60 indicies), strings should be valid cube moves or ''
+function loadKeymap(mapName) {
+    let prevMap = keymap
+    const mapping = keyBoardMappings[mapName]
+
+    let i = 0
+    for (let entry in keymap) {
+        if (legalMoves.includes(mapping[i])) {
+            keymap[entry][1] = mapping[i]
+            document.getElementById('key' + i + '-' + entry + 'mappedMove').innerText = mapping[i]
+            i++
+        }
+        else {
+            // revert keymap
+            console.warn('selected mapping includes illegal move ' + mapping[i] + ' at position ' + i)
+            keymap = prevMap
+            break
+        }
+    }
+}
+
+// Debug func where I manually put in keys, run this function and copypaste the mapping from the console. 
+function debugGetMappingFromDefault() {
+    let map = []
+    for (let entry in keymap) {
+        map.push(keymap[entry][1])
+    }
+    console.log(map)
+}
+
+
+// FRONTEND RELATED //
+
 
 const tileSize = 50
 
@@ -197,138 +200,13 @@ function initializeVCConfig() {
     initializeKeyBindOptions()
 }
 
-function initializeKeyBindOptions() {
-    let optionsDiv = document.getElementById("vconfigOptions")
-    // the values determine where a keyboard grouping ends (ex. the rows of a keyboard)
-    let keyboardVisGroupingSplits = [-1, 11, 24, 35, 45, 48, 52, 56, 58, 60]
-    let currkeyboardVisGroup = 1
-
-    // the whole keyboard will be shown here
-    let keyboardVisDiv = document.createElement('div')
-    keyboardVisDiv.style.width = 'fit-content'
-    keyboardVisDiv.style.height = 'fit-content'
-    keyboardVisDiv.style.padding = '14px'
-    keyboardVisDiv.style.display = 'flex'
-    keyboardVisDiv.style.justifyContent = 'space-between'
-
-    // characters and digits
-    let kDiv = document.createElement('div')
-    kDiv.id = 'keyboardKeys'
-    kDiv.style.display = 'flex'
-    kDiv.style.flexDirection = 'column'
-    kDiv.style.width = 'fit-content'
-    kDiv.style.height = 'fit-content'
-    keyboardVisDiv.appendChild(kDiv)
-
-    // space out keyboard and numpad
-    keyboardVisDiv.appendChild(createKeybindSpacer(4.85, 'y'))
-
-    // numpad
-    let nDiv = document.createElement('div')
-    nDiv.id = 'numberpadKeys'
-    nDiv.style.position = 'relative'
-    nDiv.style.display = 'flex'
-    nDiv.style.flexDirection = 'row'
-    nDiv.style.width = 'fit-content'
-    nDiv.style.height = 'fit-content'
-    keyboardVisDiv.appendChild(nDiv)
-
-    let groupDiv
-
-    // index of a key since keyMap is an object and not an array
-    let i = 0
-    // tbh not really sure why i didnt loop by group then by key, this works tho
-    for (let keyCode in keymap) {
-        if (keyboardVisGroupingSplits.includes(i - 1)) {
-            groupDiv = document.createElement('div')
-            groupDiv.id = "keyboardVisGroup" + currkeyboardVisGroup
-            groupDiv.style.display = 'flex'
-            groupDiv.style.flexDirection = [1, 2, 3, 4, 9].includes(currkeyboardVisGroup) ? 'row' : 'column'
-            groupDiv.style.width = 'fit-content'
-            groupDiv.style.height = 'fit-content'
-            if ([9].includes(currkeyboardVisGroup)) {
-                groupDiv.style.position = 'absolute'
-                groupDiv.style.bottom = '0'
-                groupDiv.style.left = '0'
-            }
-            // spacer at the start of the group
-            if ([2].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(.4, 'x')) }
-            if ([3].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(.8, 'x')) }
-            if ([4].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(1.2, 'x')) }
-            if ([5].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer()) }
-        }
-
-        let keyDiv = createKeybindButton(i, keyCode, keymap[keyCode][0], keymap[keyCode][1])
-        keyDiv.addEventListener("click", e => updateKey(keyDiv, keyCode))
-        groupDiv.appendChild(keyDiv)
-
-        if (keyboardVisGroupingSplits.includes(i)) {
-            // spacer at the end of the group
-            if ([1].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(1.67, 'x')) }
-            if ([3].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(1.87, 'x')) }
-            if ([4].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(2.77, 'x')) }
-            // bit of a hack 5 gets a spacer solely to accommodate group 9 (0 and . on the numpad)'s absolute positioning
-            if ([5, 8, 9].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer()) }
-
-            // attach group to the correct part of the keyboard
-            if ([1, 2, 3, 4].includes(currkeyboardVisGroup)) { kDiv.appendChild(groupDiv) }
-            else { nDiv.appendChild(groupDiv) }
-
-            currkeyboardVisGroup++
-        }
-        i++
-    }
-
-    optionsDiv.appendChild(keyboardVisDiv)
-}
-
-
-function createKeybindButton(index, code, keyName, mappedMove) {
-    let el = document.createElement('div')
-    el.id = "key" + index + "-" + code
-    el.innerText = keyName
-    el.style.backgroundColor = '#555'
-    el.style.position = 'relative'
-    el.style.width = code == 'Numpad0' ? `${2 * tileSize + 14}px` : `${tileSize}px`
-    el.style.height = code == 'NumpadAdd' ? `${2 * tileSize + 14}px` : `${tileSize}px`
-    el.style.fontSize = '20px'
-    el.style.color = '#777'
-    el.style.cursor = 'pointer'
-    el.style.padding = '5px'
-    el.style.margin = '2px'
-
-    let move = document.createElement('div')
-    move.id = "key" + index + "-" + code + "mappedMove"
-    move.innerText = mappedMove
-    move.style.fontSize = '30px'
-    move.style.color = '#ccc'
-    move.style.textAlign = 'right'
-
-    el.appendChild(move)
-    return el
-}
-
-// tilesize of one
-function createKeybindSpacer(tileMult, axis) {
-    let el = document.createElement('div')
-    el.style.backgroundColor = '#444'
-    el.style.width = tileMult && (axis == 'x') ? `${tileSize * tileMult}px` : `${tileSize}px`
-    el.style.height = tileMult && (axis == 'y') ? `${tileSize * tileMult}px` : `${tileSize}px`
-    el.style.padding = '5px'
-    el.style.margin = '2px'
-
-    return el
-}
-
-// mapping: Move[] with a length of 60 (0-59 indicies), strings should be valid cube moves or ''
-function loadKeymap(mapping) { }
-
 // keyElement gets updated
+// TODO = change mapping mode to custom
 function updateKey(keyElement, keyCode) {
     // cancel current keybind attempt
     window.updatingKeybind ? document.getElementById('moveKeybindInput').remove() : ''
     window.updatingKeybind = true
-
+    
     let awaitingKeystroke = document.createElement('div')
     awaitingKeystroke.id = 'moveKeybindInput'
     awaitingKeystroke.style.position = 'absolute'
@@ -347,7 +225,7 @@ function updateKey(keyElement, keyCode) {
             window.updatingKeybind = false
             return
         }
-    } 
+    }
     
     window.inputMoveKeybind = ''
     let form = document.createElement('form')
@@ -375,6 +253,141 @@ function updateKey(keyElement, keyCode) {
 // update localstorage and currentkeyMap
 function saveCustomKeyBind() { }
 
+function initializeKeyBindOptions() {
+    let optionsDiv = document.getElementById("vconfigOptions")
+    // the values determine where a keyboard grouping ends (ex. the rows of a keyboard)
+    let keyboardVisGroupingSplits = [-1, 11, 24, 35, 45, 48, 52, 56, 58, 60]
+    let currkeyboardVisGroup = 1
+    
+    // the whole keyboard will be shown here
+    let keyboardVisDiv = document.createElement('div')
+    keyboardVisDiv.style.width = 'fit-content'
+    keyboardVisDiv.style.height = 'fit-content'
+    keyboardVisDiv.style.padding = '14px'
+    keyboardVisDiv.style.display = 'flex'
+    keyboardVisDiv.style.justifyContent = 'space-between'
+    
+    // characters and digits
+    let kDiv = document.createElement('div')
+    kDiv.id = 'keyboardKeys'
+    kDiv.style.display = 'flex'
+    kDiv.style.flexDirection = 'column'
+    kDiv.style.width = 'fit-content'
+    kDiv.style.height = 'fit-content'
+    keyboardVisDiv.appendChild(kDiv)
+    
+    // space out keyboard and numpad
+    keyboardVisDiv.appendChild(createKeybindSpacer(4.85, 'y'))
+    
+    // numpad
+    let nDiv = document.createElement('div')
+    nDiv.id = 'numberpadKeys'
+    nDiv.style.position = 'relative'
+    nDiv.style.display = 'flex'
+    nDiv.style.flexDirection = 'row'
+    nDiv.style.width = 'fit-content'
+    nDiv.style.height = 'fit-content'
+    keyboardVisDiv.appendChild(nDiv)
+    
+    let groupDiv
+    
+    // index of a key since keyMap is an object and not an array
+    let i = 0
+    // tbh not really sure why i didnt loop by group then by key, this works tho
+    for (let keyCode in keymap) {
+        if (keyboardVisGroupingSplits.includes(i - 1)) {
+            groupDiv = document.createElement('div')
+            groupDiv.id = "keyboardVisGroup" + currkeyboardVisGroup
+            groupDiv.style.display = 'flex'
+            groupDiv.style.flexDirection = [1, 2, 3, 4, 9].includes(currkeyboardVisGroup) ? 'row' : 'column'
+            groupDiv.style.width = 'fit-content'
+            groupDiv.style.height = 'fit-content'
+            if ([9].includes(currkeyboardVisGroup)) {
+                groupDiv.style.position = 'absolute'
+                groupDiv.style.bottom = '0'
+                groupDiv.style.left = '0'
+            }
+            // spacer at the start of the group
+            if ([2].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(.4, 'x')) }
+            if ([3].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(.8, 'x')) }
+            if ([4].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(1.2, 'x')) }
+            if ([5].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer()) }
+        }
+        
+        let keyDiv = createKeybindButton(i, keyCode, keymap[keyCode][0], keymap[keyCode][1])
+        keyDiv.addEventListener("click", e => updateKey(keyDiv, keyCode))
+        groupDiv.appendChild(keyDiv)
+        
+        if (keyboardVisGroupingSplits.includes(i)) {
+            // spacer at the end of the group
+            if ([1].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(1.67, 'x')) }
+            if ([3].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(1.87, 'x')) }
+            if ([4].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer(2.77, 'x')) }
+            // bit of a hack 5 gets a spacer solely to accommodate group 9 (0 and . on the numpad)'s absolute positioning
+            if ([5, 8, 9].includes(currkeyboardVisGroup)) { groupDiv.appendChild(createKeybindSpacer()) }
+            
+            // attach group to the correct part of the keyboard
+            if ([1, 2, 3, 4].includes(currkeyboardVisGroup)) { kDiv.appendChild(groupDiv) }
+            else { nDiv.appendChild(groupDiv) }
+            
+            currkeyboardVisGroup++
+        }
+        i++
+    }
+    
+    optionsDiv.appendChild(keyboardVisDiv)
+
+    for (let template in keyBoardMappings) {
+        let el = document.createElement('div')
+        el.classList.add('vconfigButton')
+        el.innerText = template
+        el.style.width = 'fit-content'
+        el.style.width = 'fit-content'
+        el.style.padding = '5px'
+        el.style.fontSize = '16px'
+        el.style.display = 'inline'
+        el.addEventListener('click', () => {loadKeymap(template)})
+        document.getElementById('vconfigOptions').appendChild(el)
+    }
+}
+
+function createKeybindButton(index, code, keyName, mappedMove) {
+    let el = document.createElement('div')
+    el.id = "key" + index + "-" + code
+    el.innerText = keyName
+    el.style.backgroundColor = '#555'
+    el.style.position = 'relative'
+    el.style.width = code == 'Numpad0' ? `${2 * tileSize + 14}px` : `${tileSize}px`
+    el.style.height = code == 'NumpadAdd' ? `${2 * tileSize + 14}px` : `${tileSize}px`
+    el.style.fontSize = '20px'
+    el.style.color = '#777'
+    el.style.cursor = 'pointer'
+    el.style.padding = '5px'
+    el.style.margin = '2px'
+    
+    let move = document.createElement('div')
+    move.id = "key" + index + "-" + code + "mappedMove"
+    move.innerText = mappedMove
+    move.style.fontSize = '30px'
+    move.style.color = '#ccc'
+    move.style.textAlign = 'right'
+    
+    el.appendChild(move)
+    return el
+}
+
+// tilemult = multipler of default size (tileSize variable)
+function createKeybindSpacer(tileMult, axis) {
+    let el = document.createElement('div')
+    el.style.backgroundColor = '#444'
+    el.style.width = tileMult && (axis == 'x') ? `${tileSize * tileMult}px` : `${tileSize}px`
+    el.style.height = tileMult && (axis == 'y') ? `${tileSize * tileMult}px` : `${tileSize}px`
+    el.style.padding = '5px'
+    el.style.margin = '2px'
+    
+    return el
+}
+
 function displayVConfig() {
     document.getElementById("vconfigWindowBack").style.display = 'initial';
     document.getElementById("vconfigWindow").style.display = 'initial';
@@ -388,6 +401,7 @@ function closeVConfig() {
 }
 
 initializeVCConfig()
+loadKeymap('defaultMapping')
 
 window.displayVConfig = displayVConfig
 window.closeVConfig = closeVConfig

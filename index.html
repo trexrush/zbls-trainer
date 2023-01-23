@@ -92,8 +92,8 @@
 				<div>
 					<button id="vctoggle" class="abutton thinner shorter" title="Enable virtual cube for drilling">Use
 						Virtual Cube</button>
-					<button id="vcoptions" class="abutton thinner shorter" title="Enable virtual cube for drilling"
-						style="display: none;">Configure Virtual Cube</button>
+					<button id="vcoptions" class="abutton thinner shorter" title="Virtual Cube options menu"
+						style="display: none;" onclick="window.displayVConfig()">Configure Virtual Cube</button>
 				</div>
 				<ul>
 					<li>Click on the picture to select / deselect all cases in the group</li>
@@ -132,9 +132,19 @@
 				<div class="zwButton" id="closeZwButton" onclick="window.closeZW();">&nbsp;done&nbsp;</div>
 			</div>
 		</div> <!-- zbllWindow -->
+
+		<div id="vconfigWindow">
+			<div id="vconfigOptions">
+			</div>
+			<div id="vconfigFooter">
+				<!-- <div class="vconfigButton" id="allZwButton">&nbsp;all&nbsp;</div> -->
+				<div class="vconfigButton" id="closevconfigButton" onclick="window.closeVConfig();">&nbsp;done&nbsp;</div>
+			</div>
+		</div> <!-- zbllWindow -->
 	</div> <!-- selection layout -->
 
 	<div id="zbllWindowBack" onclick='window.closeZW();'></div>
+	<div id="vconfigWindowBack" onclick='window.closeVConfig();'></div>
 	<script  src="scripts/selection.js" type="module"></script>
 	<script  src="scripts/vccache.js" type="module"></script>
 	<script  src="scripts/practice.js" type="module"></script>

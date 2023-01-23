@@ -275,7 +275,7 @@ document.getElementById("bodyid").addEventListener("keydown", function(event) {
                 timerStop()
             }
             else {
-                processVirtInput(event.keyCode)
+                processVirtInput(event.code)
             }
         }
         else {

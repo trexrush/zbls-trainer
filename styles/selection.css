@@ -107,7 +107,7 @@ td {	border: 1px solid #000;}
 	-moz-user-select: none; -webkit-user-select: none; -ms-user-select:none; user-select:none;-o-user-select:none;
 	position: fixed;
 	z-index: 20;
-	background-color: #eee;
+	background-color: #333;
 	cursor: default;
     top: 40%;
     left: 50%;
@@ -128,10 +128,12 @@ td {	border: 1px solid #000;}
 .zwButton, .vconfigButton
 {
 	display: inline-block;
-	background-color: #aaa;
+	background-color: #555;
 	cursor: pointer;
 	font-size: 30px;
 	margin: 4px;
+    border: none;
+    color: white;
 }
 
 .zwButton#closeZwButton, #closevconfigButton

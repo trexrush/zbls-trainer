@@ -31,6 +31,9 @@ function loadKeymap(mapIndex) {
 
             keymap[entry][2] = shiftKeyMapping[i]
             document.getElementById('key' + i + '-' + entry + 'mappedMoveS').innerText = shiftKeyMapping[i]
+
+            document.getElementById('keymapdescription').innerText = keyBoardMappings[mapIndex]['desc']
+
             i++
         } catch (e) {
             // revert keymap
@@ -59,4 +62,4 @@ function getMappingFromKeymap() {
     return {title: '', desc: '', map: map, shiftMap: smap}
 }
 
-export { legalMoves, saveCustomKeyBind, loadCustomKeybind, loadKeymap }
+export { legalMoves, saveCustomKeyBind, loadCustomKeybind, loadKeymap, getMappingFromKeymap }

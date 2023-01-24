@@ -181,6 +181,15 @@ function initializeKeyBindOptions() {
 
     optionsDiv.appendChild(keyboardVisDiv)
 
+    let keyBoardMappingsDesc = document.createElement('div')
+    keyBoardMappingsDesc.id = 'keymapdescription'
+    keyBoardMappingsDesc.style.width = "100%"
+    keyBoardMappingsDesc.style.height = "fit-content"
+    keyBoardMappingsDesc.style.textAlign = "center"
+    keyBoardMappingsDesc.style.color = "white"
+    keyBoardMappingsDesc.style.fontSize = "20px"
+    optionsDiv.appendChild(keyBoardMappingsDesc)
+
     keyBoardMappings.forEach((template, i) => {
         let el = document.createElement('div')
         el.classList.add('vconfigButton')

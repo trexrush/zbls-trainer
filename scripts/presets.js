@@ -1,6 +1,6 @@
 import { getSelectionStringFromZBLLMap, loadLocal, saveLocal, setZBLLMapFromSelectionString } from "./saveload.js";
 import { renderSelection } from "./selection.js";
-import { applystyle } from "./timer.js";
+import { applystyle } from "./styles.js";
 
 // map: "name" -> "JSON string"
 var zbllPresets = new Map();

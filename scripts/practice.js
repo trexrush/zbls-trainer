@@ -2,19 +2,14 @@ import { zbllMap } from "./casesmap.js";
 import { renderSelection, adjustInfo } from "./selection.js";
 import { displayPracticeInfo, showScramble, displayStats } from "./timer.js";
 
-var selCases = [];
-window.selCases = selCases
-var recaps = [];
-window.recaps = recaps
-var currentNum;
-window.currentNum = currentNum
-var currentMode = 0; // 0 = selection, 1 = practicing, 2 = recap
-window.currentMode = currentMode
+let selCases = [];
+let recaps = [];
+let currentMode = 0; // 0 = selection, 1 = practicing, 2 = recap
 
 /// \param m = mode: 0 = selection, 1 = practicing, 2 = recap
 function changeMode(m)
 {
-    window.currentMode = m;
+    currentMode = m;
     var pr = document.getElementsByClassName("practice_layout");
     for (var i = 0; i < pr.length; i++)
         pr[i].style.display = (m == 0) ? 'none' : 'initial';
@@ -31,7 +26,7 @@ function changeMode(m)
 
     // switch to practising layout
     fillSelected();
-    window.recaps = (m == 2) ? window.selCases.slice() : [];
+    recaps = (m == 2) ? selCases.slice() : [];
     // practice
     displayPracticeInfo();
     showScramble();
@@ -43,7 +38,7 @@ function changeMode(m)
 // case.p = probability, normaized
 function fillSelected()
 {
-    window.selCases = []
+    selCases = []
     for (var oll in zbllMap) if (zbllMap.hasOwnProperty(oll)) {
         var ollMap = zbllMap[oll];
         for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
@@ -51,7 +46,7 @@ function fillSelected()
             for (var zbll in collMap) if (collMap.hasOwnProperty(zbll)) {
                 if (collMap[zbll]["c"])
                 {
-                    window.selCases.push(
+                    selCases.push(
                         {
                             p: 1, // probability of generating scramble with this case
                             algs: collMap[zbll]["algs"],
@@ -109,4 +104,4 @@ function inverse_scramble(s) {
 }
 
 window.changeMode = changeMode;
-export { inverse_scramble, randomNum, changeMode, currentNum, fillSelected }
+export { inverse_scramble, randomNum, changeMode, fillSelected, selCases, recaps, currentMode }

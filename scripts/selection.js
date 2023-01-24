@@ -1,6 +1,7 @@
 import { zbllMap } from './casesmap.js'
 import { getSelectionStringFromZBLLMap, loadLocal, saveLocal, setZBLLMapFromSelectionString } from './saveload.js';
 import { getPicSize } from './timer.js';
+import { currentMode } from './practice.js'
 /* colors correspond to selection state */
 
 var colorAll = "#5f5";
@@ -34,7 +35,7 @@ function adjustInfo()
     if (document.getElementById( "previewPic" ) != null)
             document.getElementById( "resultPicContainer" ).style.height = getPicSize() + "px";
 
-    if (window.currentMode == 0) {
+    if (currentMode == 0) {
 
         var cases = document.getElementById( "cases_selection" )
         let rectW = Math.min(cases.getBoundingClientRect().width, document.body.getBoundingClientRect().width - 299)
@@ -77,7 +78,7 @@ function idItemColl(oll,coll) {return "item-"+oll+"-"+coll;}
 function idItemZbll(oll,coll, zbll) {return "item-"+oll+"-"+coll+"-"+zbll;}
 function idHeaderOll(oll) {return "ollHead-"+oll;}
 function idHeaderColl(oll,coll) {return "collHead-"+oll+"-"+coll;}
-function zbllSvg(oll,coll, zbll) {return "caseImage/"+window.topOr3D+"/"+oll+"-"+coll+"-"+zbll.replace("/", "s")+".png";}
+function zbllSvg(oll,coll, zbll) {return "caseImage/ZBLS/"+"level3"+"/"+oll+"-"+coll+"-"+zbll.replace("/", "s")+".png";}
 
 
 function prepareMap() {
@@ -203,7 +204,7 @@ function ollItem(oll) // div
 {
     var s = "";
     s += ollHeader(oll);
-    s += "<div onmousedown='window.ollClicked(\"" + oll + "\")' class='ollItem'><img src='caseImage/" + oll + ".png' width='" + imgSize + "px'/></div>";
+    s += "<div onmousedown='window.ollClicked(\"" + oll + "\")' class='ollItem'><img src='caseImage/ZBLS/level1/" + oll + ".png' width='" + imgSize + "px'/></div>";
     return s;
 }
 
@@ -211,7 +212,7 @@ function collItem(oll, coll) // div
 {
     var s = "";
     s += collHeader(oll, coll);
-    s += "<div onmousedown='window.collClicked(\"" + oll + "\",\"" + coll + "\")' class='ollItem'><img src='caseImage/" + window.topOr3D + "/"
+    s += "<div onmousedown='window.collClicked(\"" + oll + "\",\"" + coll + "\")' class='ollItem'><img src='caseImage/ZBLS/" + "level2" + "/"
             + oll+"-"+coll + ".png' width='" + imgSize + "px'/></div>";
     return s;
 }

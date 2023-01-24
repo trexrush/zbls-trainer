@@ -4,9 +4,9 @@ import { llmap } from "./llmap.js";
 import { fillSelected } from "./practice.js";
 import { isInBookmarks } from "./presets.js";
 import { loadLocal, saveLocal } from "./saveload.js";
-import { generateSelectionTable } from "./selection.js";
 import { preloadImage, scrambleToVcUrl } from "./vccache.js";
-import { processVirtInput, virtEnabled, virtualCube } from "./virtualcube.js";
+import { processVirtInput, virtEnabled, virtualCube, virtMoves } from "./virtualcube.js";
+import { selCases, recaps, currentMode } from "./practice.js"
 
 let scramble = ""
 
@@ -17,7 +17,7 @@ function showScramble()
 {
     window.allowStartingTimer = false;
     var s;
-    if (window.selCases.length == 0)
+    if (selCases.length == 0)
         s = "click \"select cases\" above and pick some ZBLS cases to practice";
     else {
         scramble = generateScramble();
@@ -41,27 +41,27 @@ window.lastZbllCase = lastZbllCase
 
 
 function displayPracticeInfo() {
-    var s = " | <b> " + window.selCases.length + "</b> selected";
-    if (window.recaps.length > 0)
-        s += " | <b>" + window.recaps.length + "</b> to recap";
+    var s = " | <b> " + selCases.length + "</b> selected";
+    if (recaps.length > 0)
+        s += " | <b>" + recaps.length + "</b> to recap";
 
     document.getElementById("selInfo").innerHTML = s;
 }
 
-// Returns element from (window.selCases) based on its probability, and then decreases its probability by a factor.
+// Returns element from (selCases) based on its probability, and then decreases its probability by a factor.
 // Normalizes probabilities before
 function getZbllCasePbased() {
     // normalize selcases.p, making their sum=1
     function normalizeProps() {
         let sum = 0;
-        window.selCases.forEach(function (c) {
+        selCases.forEach(function (c) {
             sum += c.p;
         });
 
         if (sum == 0)
             return console.log("sum=0. Nothing is selected?");
 
-        window.selCases.forEach(function (c) {
+        selCases.forEach(function (c) {
             c.p /= sum;
         });
     }
@@ -70,10 +70,10 @@ function getZbllCasePbased() {
     // debugging: log probabilities
     function logProps(index) {
         let s = "";
-        for (let i = 0; i < window.selCases.length; ++i) {
+        for (let i = 0; i < selCases.length; ++i) {
             if (i == index)
                 s += "^";
-            s += Number.parseFloat(window.selCases[i].p).toFixed(3) + (i == window.selCases.length-1 ? "" : ", ");
+            s += Number.parseFloat(selCases[i].p).toFixed(3) + (i == selCases.length-1 ? "" : ", ");
         }
         console.log(s);
     }
@@ -83,14 +83,14 @@ function getZbllCasePbased() {
     let x = Math.random(); // 0 to 1, determines the case we're selecting
 
     var i = 0;
-    for (; i < window.selCases.length; ++i) {
-        x -= window.selCases[i].p;
+    for (; i < selCases.length; ++i) {
+        x -= selCases[i].p;
         if (x <= 0)
             break;
     }
 
-    window.selCases[i].p /= factor;
-    return window.selCases[i];
+    selCases[i].p /= factor;
+    return selCases[i];
 }
 
 function generateScramble()
@@ -105,8 +105,8 @@ function generateScramble()
         // recap mode: select the case
         zbllCase = randomElement(window.recaps);
         // remove it from the array
-        const index = window.recaps.indexOf(zbllCase);
-        window.recaps.splice(index, 1);
+        const index = recaps.indexOf(zbllCase);
+        recaps.splice(index, 1);
     }
     var alg = inverse_scramble(randomElement(zbllCase.algs));
     var finalAlg = applyRotationButLessB(alg);
@@ -282,7 +282,7 @@ document.getElementById("bodyid").addEventListener("keydown", function(event) {
             return;
         }
     }
-    else if (event.keyCode == timerActivatingButton && window.currentMode != 0)
+    else if (event.keyCode == timerActivatingButton && currentMode != 0)
     {
         timerSetReady();
         return;
@@ -294,7 +294,7 @@ document.getElementById("bodyid").addEventListener("keyup", function(event) {
     allowed = true;
     if (!window.allowStartingTimer)
         return; // preventing auto-repeat
-    if (!running && !waiting && (event.keyCode == timerActivatingButton) && window.currentMode != 0) {
+    if (!running && !waiting && (event.keyCode == timerActivatingButton) && currentMode != 0) {
         timerStart();
     }
     else {
@@ -357,8 +357,8 @@ function timerStart() {
             virtualCube.experimentalSetupAlg = setup
         }
         else {
-            window.virtMoves = setup
-            virtualCube.alg = window.virtMoves
+            virtMoves = setup
+            virtualCube.alg = virtMoves
         }
     }
     var d = new Date();
@@ -474,7 +474,7 @@ function changeSelection(i) {
     var selected = !(zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"]);
     zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"] = selected;
     document.getElementById("changeSelBtn").innerHTML = selected ? "is selected" : "not selected";
-    // TODO instead of re-generating window.selCases, just remove one case from it
+    // TODO instead of re-generating selCases, just remove one case from it
     fillSelected();
     //showScramble();
     displayPracticeInfo();
@@ -555,14 +555,6 @@ function fillResultInfo(r) {
         window.indexViewing = 0;
     }
 
-}
-
-function onFlat3DviewToggle() {
-    window.topOr3D = (window.topOr3D == 'top') ? '3D' : 'top';
-    saveLocal("topOr3D", window.topOr3D);
-    generateSelectionTable(); // redraw selection
-    if (window.indexViewing < timesArray.length)
-        fillResultInfo(timesArray[window.indexViewing]);
 }
 
 /// calculates average of \param n in window.timesArray in interval from (end-n, end]
@@ -680,61 +672,6 @@ function timeStringToMseconds(s) {
         return Math.round(secs * 100);
 }
 
-//saves to localstorage
-function savestyle() {
-    try {
-        localStorage.setItem('bgcolor_in', document.getElementById("bgcolor_in").value);
-        localStorage.setItem('textcolor_in', document.getElementById("textcolor_in").value);
-        localStorage.setItem('linkscolor_in', document.getElementById("linkscolor_in").value);
-        return true;
-    }
-    catch(e) { return false; }
-}
-
-//loads from localstorage
-function loadstyle() {
-    try {
-        var bgcolor = localStorage.getItem('bgcolor_in');
-        if (bgcolor.length > 0) {
-            document.getElementById("bgcolor_in").value = localStorage.getItem('bgcolor_in');
-            document.getElementById("textcolor_in").value = localStorage.getItem('textcolor_in');
-            document.getElementById("linkscolor_in").value = localStorage.getItem('linkscolor_in');
-            return true;
-        }
-    }
-    catch(e) { return false; }
-}
-
-function applystyle() {
-    document.getElementById("bodyid").style.backgroundColor = document.getElementById("bgcolor_in").value;
-    document.getElementById("bodyid").style.color = timertext.style.color = document.getElementById("textcolor_in").value;
-    var inputs = document.getElementsByClassName("settinginput");
-    Array.prototype.forEach.call(inputs, function(el) {
-        el.style.backgroundColor = document.getElementById("bgcolor_in").value;
-        el.style.color = document.getElementById("textcolor_in").value;
-    });
-    var links = document.getElementsByTagName("a");
-    Array.prototype.forEach.call(links, function(el) {
-        el.style.color = document.getElementById("linkscolor_in").value;
-    });
-    savestyle();
-}
-
-function resetStyle(dark) {
-    document.getElementById("bgcolor_in").value = dark ? "#161616" : "#f5f5f5";
-    document.getElementById("textcolor_in").value = dark? "white" : "black";
-    document.getElementById("linkscolor_in").value = dark ? "#0ff" : "#004411";
-    applystyle();
-    savestyle();
-}
-
-function toggleColorSettings() {
-    var d = document.getElementById("colorSettings").style.display;
-    console.log(d);
-    document.getElementById("colorSettings").style.display = (d == "inline") ?  "none" : "inline";
-    console.log(document.getElementById("colorSettings").style.display);
-}
-
 // add key listeners to blur settings inputs
 var inputs = document.getElementsByClassName("settinginput");
 Array.prototype.forEach.call(inputs, function(el) {
@@ -747,16 +684,11 @@ Array.prototype.forEach.call(inputs, function(el) {
 
 });
 
-loadstyle();
-applystyle();
 
 window.adjustSize = adjustSize
 window.confirmClear = confirmClear
 window.displayStatsBox = displayStatsBox
-window.onFlat3DviewToggle = onFlat3DviewToggle
-window.resetStyle = resetStyle
-window.toggleColorSettings = toggleColorSettings
 window.timeClicked = timeClicked
 window.confirmRem = confirmRem
 window.changeSelection = changeSelection
-export { isMobile, onFlat3DviewToggle, toggleColorSettings, resetStyle, applystyle, loadstyle, savestyle, displayStatsBox, resetDefaults, adjustSize, getPicSize, displayPracticeInfo, showScramble, displayStats }
+export { isMobile, displayStatsBox, resetDefaults, adjustSize, getPicSize, displayPracticeInfo, showScramble, displayStats }

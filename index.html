@@ -42,8 +42,8 @@
 					<div id="resultinfo">
 						<div id='resultInfoHeader' class="resultInfoHeader">case info will be displayed there</div>
 						<div id='resultInfoContainer'></div>
-						<div id='resultPicContainer' onclick='window.onFlat3DviewToggle()'
-							title='Click to toggle flat/3D view'></div>
+						<!-- TODO: make a twizzle editor (after refactor) -->
+						<div id='resultPicContainer'></div>
 					</div>
 				</td>
 			</tr>
@@ -103,7 +103,8 @@
 					<li>When you're ready, click Done</li>
 				</ul>
 				<br>
-				At the moment, you need to stop the virt timer manually, and the configure virtual cube button does nothing. (coming soon!)
+				At the moment, you need to stop the virt timer manually, and the configure virtual cube button does
+				nothing. (coming soon!)
 				<br>
 				GitHub repository: <a href="https://github.com/trexrush/zbls-trainer.git" target="_blank">click</a> <br>
 			</div>
@@ -138,42 +139,63 @@
 			</div>
 			<div id="vconfigFooter">
 				<!-- <div class="vconfigButton" id="allZwButton">&nbsp;all&nbsp;</div> -->
-				<div class="vconfigButton" id="closevconfigButton" onclick="window.closeVConfig();">&nbsp;done&nbsp;</div>
+				<div class="vconfigButton" id="closevconfigButton" onclick="window.closeVConfig();">&nbsp;done&nbsp;
+				</div>
 			</div>
 		</div> <!-- zbllWindow -->
 	</div> <!-- selection layout -->
 
 	<div id="zbllWindowBack" onclick='window.closeZW();'></div>
 	<div id="vconfigWindowBack" onclick='window.closeVConfig();'></div>
-	<script  src="scripts/selection.js" type="module"></script>
-	<script  src="scripts/vccache.js" type="module"></script>
-	<script  src="scripts/practice.js" type="module"></script>
-	<script  src="scripts/timer.js" type="module"></script>
-	<script  src="scripts/virtualcube.js" type="module"></script>
-	<script defer type="module">
-		import { changeMode } from "./scripts/practice.js";
-		import { prepareMap, generateSelectionTable, renderSelection, adjustInfo, loadSelection } from "./scripts/selection.js";
-		import { topOr3D } from "./scripts/glob.js"
+</body>
 
+</html>
+<script src="scripts/selection.js" type="module"></script>
+<script src="scripts/vccache.js" type="module"></script>
+<script src="scripts/practice.js" type="module"></script>
+<script src="scripts/timer.js" type="module"></script>
+<script src="scripts/virtualcube.js" type="module"></script>
+<script src="scripts/virtconfigwindow.js" type="module"></script>
+<script src="scripts/virtkeybindings.js" type="module"></script>
+<script type="module">
+	import { changeMode } from "./scripts/practice.js";
+	import { prepareMap, generateSelectionTable, renderSelection, adjustInfo, loadSelection } from "./scripts/selection.js";
+	// global variables storage
+	import { loadPresets } from "./scripts/presets.js";
+	import { loadLocal } from "./scripts/saveload.js";
+	import { loadKeymap } from "./scripts/virtkeybindings.js"
+	import { initializeVCConfig } from "./scripts/virtconfigwindow.js";
+	import { initializeVirtualCube } from "./scripts/virtualcube.js"
+
+	let indexViewing = 0; // index of time instance currently viewing in time
+
+	// TODO: generalize to any algset
+	const loadData = (() => {
 		prepareMap();
 		generateSelectionTable();
 		loadSelection();
 		renderSelection();
-		adjustInfo();
+	})()
 
-		document.getElementById("bodyid").addEventListener("keydown", function (event) {
-			if (event.keyCode == 27) // esc
-				closeZW();
-		});
+	adjustInfo();
+	initializeVirtualCube()
+	initializeVCConfig()
+	changeMode(0);
 
-		changeMode(0);
-	</script>
-</body>
+	window.onBodyLoaded = () => {
+		loadKeymap('0')
+		loadPresets();
+	}
 
-</html>
+	document.getElementById("bodyid").addEventListener("keydown", function (event) {
+		if (event.keyCode == 27) {// esc
+			closeZW();
+			closeVConfig();
+		}
+	});
+</script>
 
-
-<script src="scripts/glob.js" type="module"></script>
+<script src="scripts/styles.js" type="module"></script>
 <script src="scripts/casesmap.js" type="module"></script>
 <script src="scripts/saveload.js" type="module"></script>
 <script src="scripts/presets.js" type="module"></script>

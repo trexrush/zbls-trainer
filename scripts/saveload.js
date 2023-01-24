@@ -1,4 +1,4 @@
-import { zbllMap } from "./casesmap.js";
+import { zblsMap } from "./casesmap.js";
 
 /// \value stringified json object or standard type
 /// \returns true if succeed
@@ -34,12 +34,12 @@ function getSelectionStringFromZBLLMap() {
 
     var selection = {};
 
-    for (var oll in zbllMap) {
+    for (var oll in zblsMap) {
         selection[oll] = {};
-        for (var coll in zbllMap[oll]) {
+        for (var coll in zblsMap[oll]) {
             selection[oll][coll] = {};
-            for (var zbll in zbllMap[oll][coll]) {
-                selection[oll][coll][zbll] = zbllMap[oll][coll][zbll].c;
+            for (var zbll in zblsMap[oll][coll]) {
+                selection[oll][coll][zbll] = zblsMap[oll][coll][zbll].c;
             }
         }
     }
@@ -47,23 +47,23 @@ function getSelectionStringFromZBLLMap() {
     return JSON.stringify(selection);
 }
 
-// Applies the selection in the given string to zbllMap
+// Applies the selection in the given string to zblsMap
 function setZBLLMapFromSelectionString(string) {
-    // reset zbllMap first
-    for (var oll in zbllMap) {
-        for (var coll in zbllMap[oll]) {
-            for (var zbll in zbllMap[oll][coll]) {
-                zbllMap[oll][coll][zbll].c = false;
+    // reset zblsMap first
+    for (var oll in zblsMap) {
+        for (var coll in zblsMap[oll]) {
+            for (var zbll in zblsMap[oll][coll]) {
+                zblsMap[oll][coll][zbll].c = false;
             }
         }
     }
 
     var selection = JSON.parse(string);
 
-    for (var oll in selection) if (zbllMap.hasOwnProperty(oll)) {
-        for (var coll in selection[oll]) if (zbllMap[oll].hasOwnProperty(coll)) {
-            for (var zbll in selection[oll][coll]) if (zbllMap[oll][coll].hasOwnProperty(zbll)) {
-                zbllMap[oll][coll][zbll].c = selection[oll][coll][zbll];
+    for (var oll in selection) if (zblsMap.hasOwnProperty(oll)) {
+        for (var coll in selection[oll]) if (zblsMap[oll].hasOwnProperty(coll)) {
+            for (var zbll in selection[oll][coll]) if (zblsMap[oll][coll].hasOwnProperty(zbll)) {
+                zblsMap[oll][coll][zbll].c = selection[oll][coll][zbll];
             }
         }
     }

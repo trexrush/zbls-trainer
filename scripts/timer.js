@@ -1,5 +1,5 @@
 
-import { zbllMap } from "./casesmap.js";
+import { zblsMap } from "./casesmap.js";
 import { llmap } from "./llmap.js";
 import { fillSelected } from "./practice.js";
 import { isInBookmarks } from "./presets.js";
@@ -471,8 +471,8 @@ function confirmRem(i)
 // user clicks "selected: no(yes)" on the scramble in practising mode
 function changeSelection(i) {
     var r = window.timesArray[i];
-    var selected = !(zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"]);
-    zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"] = selected;
+    var selected = !(zblsMap[r["oll"]][r["coll"]][r["zbll"]]["c"]);
+    zblsMap[r["oll"]][r["coll"]][r["zbll"]]["c"] = selected;
     document.getElementById("changeSelBtn").innerHTML = selected ? "is selected" : "not selected";
     // TODO instead of re-generating selCases, just remove one case from it
     fillSelected();
@@ -541,7 +541,7 @@ function fillResultInfo(r) {
         s += "<a id='changeSelBtn' style='color: " +
             document.getElementById("linkscolor_in").value +
             "' onclick='window.changeSelection(" + r["index"] + ")'>"+
-            (zbllMap[r["oll"]][r["coll"]][r["zbll"]]["c"] ? "is selected" : "not selected") + "</a><br>";
+            (zblsMap[r["oll"]][r["coll"]][r["zbll"]]["c"] ? "is selected" : "not selected") + "</a><br>";
 
 
         document.getElementById("resultInfoContainer").innerHTML = s;

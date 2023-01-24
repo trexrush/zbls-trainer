@@ -1,4 +1,4 @@
-var zbllMap =
+var zblsMap =
 {
     "VHLS": {
         '1': {
@@ -6635,4 +6635,4 @@ var zbllMap =
         },
     },
 }
-export { zbllMap }
+export { zblsMap }

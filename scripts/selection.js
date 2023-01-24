@@ -1,4 +1,4 @@
-import { zbllMap } from './casesmap.js'
+import { zblsMap } from './casesmap.js'
 import { getSelectionStringFromZBLLMap, loadLocal, saveLocal, setZBLLMapFromSelectionString } from './saveload.js';
 import { getPicSize } from './timer.js';
 import { currentMode } from './practice.js'
@@ -82,8 +82,8 @@ function zbllSvg(oll,coll, zbll) {return "caseImage/ZBLS/"+"level3"+"/"+oll+"-"+
 
 
 function prepareMap() {
-    for (var oll in zbllMap) if (zbllMap.hasOwnProperty(oll)) {
-        var ollMap = zbllMap[oll];
+    for (var oll in zblsMap) if (zblsMap.hasOwnProperty(oll)) {
+        var ollMap = zblsMap[oll];
         for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
             let collMap = ollMap[coll];
             for (var zbll in collMap) if (collMap.hasOwnProperty(zbll)) {
@@ -103,14 +103,14 @@ function colorBySelection(all, none)
     return colorNone();
 }
 
-/// iterates the zbllMap and highlights HTML elements according to the selection
+/// iterates the zblsMap and highlights HTML elements according to the selection
 function renderSelection()
 {
     var totalZbllSel = 0;
-    for (var oll in zbllMap) if (zbllMap.hasOwnProperty(oll)) {
+    for (var oll in zblsMap) if (zblsMap.hasOwnProperty(oll)) {
         var ollNoneSel = true, ollAllSel = true; // ollNoneSel = 0 selected, ollAllSel = all cases selected
         var zbllsInOll = 0;
-        var ollMap = zbllMap[oll];
+        var ollMap = zblsMap[oll];
         for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
             var collNoneSel = true, collAllSel = true; // ollNoneSel = 0 selected, ollAllSel = all cases selected	
             var zbllsInColl = 0;
@@ -153,8 +153,8 @@ function generateSelectionTable()
 
     // generate table header with OLL cases
     s += "<tr>";
-    for (var oll in zbllMap) {
-        if (zbllMap.hasOwnProperty(oll)) {
+    for (var oll in zblsMap) {
+        if (zblsMap.hasOwnProperty(oll)) {
             s += "<td id='" + idTdOll(oll) + "' style='background-color:" +colorNone()+";'>" + ollItem(oll) + "</td>";
             // .style.backgroundColor
         }
@@ -166,8 +166,8 @@ function generateSelectionTable()
     {
         s += "<tr>";
 
-        for (var oll in zbllMap) {
-            if (zbllMap.hasOwnProperty(oll)) {
+        for (var oll in zblsMap) {
+            if (zblsMap.hasOwnProperty(oll)) {
                 var collName = getCollByNum(oll, row);
                 if (!collName) {
                     s += "<td class='collTd' id='td-empty'>(none)</td>";
@@ -189,7 +189,7 @@ function zbllItem(oll, coll, zbll) // div with img
 {
     var s = "";
     var col = colorNone();
-    if (zbllMap[oll][coll][zbll]["c"])
+    if (zblsMap[oll][coll][zbll]["c"])
         col = colorAll;
     s += "<div ";
     s += "id='" + idItemZbll(oll, coll, zbll) + "' ";
@@ -250,7 +250,7 @@ function collHeaderContent(oll, coll, n) // text
 /// returns COLL name of \param oll by number n (0 to 5)
 function getCollByNum(oll, n)
 {
-    var ollMap = zbllMap[oll];
+    var ollMap = zblsMap[oll];
     var i = -1;
     for (var key in ollMap) {
         if (ollMap.hasOwnProperty(key)) {
@@ -276,7 +276,7 @@ function expandOll(oll)
 {
     var isCollapsed = false;
     // "td-" + oll + "-" + collName
-    var ollMap = zbllMap[oll];
+    var ollMap = zblsMap[oll];
     for (var coll in ollMap) {
         if (ollMap.hasOwnProperty(coll)) {
             // expland or collapse
@@ -312,14 +312,14 @@ function collClicked(oll, coll)
 function zbllClicked(oll, coll, zbll)
 {
     // change its color; do not render anything else
-    var newVal = !(zbllMap[oll][coll][zbll]["c"]);
+    var newVal = !(zblsMap[oll][coll][zbll]["c"]);
     // change color
     if (newVal)
         document.getElementById( idItemZbll(oll, coll, zbll) ).style.backgroundColor = colorAll;
     else
         document.getElementById( idItemZbll(oll, coll, zbll) ).style.backgroundColor = colorNone();
 
-    zbllMap[oll][coll][zbll]["c"] = newVal;
+    zblsMap[oll][coll][zbll]["c"] = newVal;
 
     updateZwHeader(oll, coll);
 }
@@ -327,7 +327,7 @@ function zbllClicked(oll, coll, zbll)
 /// \param c assign this boolean value to all zbll of \param oll (true=select all, false=unmark all)
 function selectAllOll(oll, c)
 {
-    var ollMap = zbllMap[oll];
+    var ollMap = zblsMap[oll];
     for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
         let collMap = ollMap[coll];
         for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
@@ -338,7 +338,7 @@ function selectAllOll(oll, c)
 /// \param c assign this boolean value to all zbll of \param oll (true=select all, false=unmark all)
 function selectAllColl(oll, coll, c)
 {
-    var collMap = zbllMap[oll][coll];
+    var collMap = zblsMap[oll][coll];
     for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
         collMap[zbll]["c"] = c;
 }
@@ -347,7 +347,7 @@ function selectAllColl(oll, coll, c)
 /// \param c assign this boolean value to all zbll of \param oll (true=select all, false=unmark all)
 function selectAllZw(oll, coll, c)
 {
-    var collMap = zbllMap[oll][coll];
+    var collMap = zblsMap[oll][coll];
     for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
     {
         collMap[zbll]["c"] = c;
@@ -363,7 +363,7 @@ function selectAllZw(oll, coll, c)
 /// \returns true if oll has some selected cases
 function ollHasSelected(oll)
 {
-    var ollMap = zbllMap[oll];
+    var ollMap = zblsMap[oll];
     for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
         let collMap = ollMap[coll];
         for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
@@ -376,7 +376,7 @@ function ollHasSelected(oll)
 /// \returns true if coll has some selected cases
 function collHasSelected(oll, coll)
 {
-    var collMap = zbllMap[oll][coll];
+    var collMap = zblsMap[oll][coll];
     for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
         if (collMap[zbll]["c"])
             return true;
@@ -386,7 +386,7 @@ function collHasSelected(oll, coll)
 /// short for howManyZbllsInCollSelected
 function nZbllsInColl(oll, coll)
 {
-    var collMap = zbllMap[oll][coll];
+    var collMap = zblsMap[oll][coll];
     var n = 0;
     for (var zbll in collMap) if (collMap.hasOwnProperty(zbll))
         if (collMap[zbll]["c"])
@@ -402,7 +402,7 @@ function displayZW(oll, coll)
     document.getElementById( "zbllWindow" ).style.display = 'initial';
 
     // fill the pictures
-    var collMap = zbllMap[oll][coll];
+    var collMap = zblsMap[oll][coll];
     var s = "<span class='nw'>";
     var n = 0;
     for (var zbll in collMap) if (collMap.hasOwnProperty(zbll)) {

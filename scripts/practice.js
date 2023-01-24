@@ -1,4 +1,4 @@
-import { zbllMap } from "./casesmap.js";
+import { zblsMap } from "./casesmap.js";
 import { renderSelection, adjustInfo } from "./selection.js";
 import { displayPracticeInfo, showScramble, displayStats } from "./timer.js";
 
@@ -39,8 +39,8 @@ function changeMode(m)
 function fillSelected()
 {
     selCases = []
-    for (var oll in zbllMap) if (zbllMap.hasOwnProperty(oll)) {
-        var ollMap = zbllMap[oll];
+    for (var oll in zblsMap) if (zblsMap.hasOwnProperty(oll)) {
+        var ollMap = zblsMap[oll];
         for (var coll in ollMap) if (ollMap.hasOwnProperty(coll)) {
             let collMap = ollMap[coll];
             for (var zbll in collMap) if (collMap.hasOwnProperty(zbll)) {

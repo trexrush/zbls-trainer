@@ -5,7 +5,8 @@ import { Alg, Move } from "https://cdn.cubing.net/js/cubing/alg";
 import { isMobile } from "./timer.js";
 import { keymap } from "./keyboardMappings.js";
 
-let virtMoves = '';
+let virtMoves = ''
+let setVirtMoves = (val) => { virtMoves = val }
 let virtEnabled = false
 
 const virtualCube = new TwistyPlayer({
@@ -138,6 +139,6 @@ let options = [
 ]
 
 // TODO - update dark mode, split up VC file into multiple files, saving templates + options, stopping timer when f2l + EO is done), saving of options, ffs clean up the codebase / tsify it
-export { virtEnabled, virtualCube, initializeVirtualCube, processVirtInput, options, virtMoves }
+export { virtEnabled, virtualCube, initializeVirtualCube, processVirtInput, options, virtMoves, setVirtMoves }
 
 

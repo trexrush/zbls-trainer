@@ -5,7 +5,7 @@ import { fillSelected } from "./practice.js";
 import { isInBookmarks } from "./presets.js";
 import { loadLocal, saveLocal } from "./saveload.js";
 import { preloadImage, scrambleToVcUrl } from "./vccache.js";
-import { processVirtInput, virtEnabled, virtualCube, virtMoves } from "./virtualcube.js";
+import { processVirtInput, virtEnabled, virtualCube, virtMoves, setVirtMoves } from "./virtualcube.js";
 import { selCases, recaps, currentMode } from "./practice.js"
 
 let scramble = ""
@@ -350,14 +350,14 @@ function timerStart() {
     if (virtEnabled) {
         console.log( "applying scramble to virt" )
         virtualCube.alg = ''
-        window.virtMoves = ''
+        setVirtMoves('')
         let setup = inverse_scramble(randomElement(llmap)) + " " + scramble
         // randomly applies a ZBLL before applying the ZBLS scramble to simulate actual solves
         if (window.smoothMovement) {
             virtualCube.experimentalSetupAlg = setup
         }
         else {
-            virtMoves = setup
+            setVirtMoves(setup)
             virtualCube.alg = virtMoves
         }
     }

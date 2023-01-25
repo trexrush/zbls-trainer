@@ -34,4 +34,4 @@ Images were generated using trainyu to get a list of ZBLS algs to feed into visu
 Future plans
 ----------
 
-I may add FL / BR slot support down the road.
+I am currently refactoring the entire application to be written with Typescript, with Astro and Svelte. I am also restructuring the project to be a general purpose trainer that will work for many algsets (like trainyu currently does)

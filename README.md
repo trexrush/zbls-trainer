@@ -1,6 +1,6 @@
 # ZBLS trainer
 ## https://trexrush.github.io/zbls-trainer/
-## created from the codebase of https://bestsiteever.ru/zbll/
+## created from the (old, non-Vue) codebase of https://bestsiteever.ru/zbll/
 
 ![zbll trainer demo](images/demo.gif)
 

@@ -103,7 +103,7 @@ function generateScramble()
         zbllCase = getZbllCasePbased();
     } else {
         // recap mode: select the case
-        zbllCase = randomElement(window.recaps);
+        zbllCase = randomElement(recaps);
         // remove it from the array
         const index = recaps.indexOf(zbllCase);
         recaps.splice(index, 1);
